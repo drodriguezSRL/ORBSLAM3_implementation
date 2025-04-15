@@ -3,21 +3,38 @@
 
 FROM ubuntu:20.04
 
-# Avoid user interaction during package install
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Set working directory
 WORKDIR /root
 
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    build-essential cmake git wget unzip pkg-config \
-    libgtk2.0-dev libavcodec-dev libavformat-dev libswscale-dev \
-    libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev \
-    libdc1394-22-dev libglew-dev libboost-all-dev libssl-dev \
-    libeigen3-dev libcanberra-gtk-module libatlas-base-dev \
-    libsuitesparse-dev python3-dev python3-pip python3-venv && \
+    build-essential \ 
+    cmake \ 
+    git \
+    libgtk2.0-dev \ 
+    libavcodec-dev \ 
+    libavformat-dev \
+    libswscale-dev \
+    libtbb2 \ 
+    libtbb-dev \ 
+    libjpeg-dev \ 
+    libpng-dev \ 
+    libtiff-dev \
+    libdc1394-22-dev \ 
+    libglew-dev \ 
+    libboost-all-dev \ 
+    libssl-dev \
+    libeigen3-dev \
+    libcanberra-gtk-module \ 
+    libatlas-base-dev \
+    libsuitesparse-dev \
+    pkg-config \
+    python3-dev \ 
+    python3-pip \
+    python3-venv \
+    unzip\
+    wget && \ 
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages globally

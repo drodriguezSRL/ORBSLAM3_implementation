@@ -82,3 +82,10 @@ optional next steps I don't fully understand yet:
 - a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
 - mounting specific datasets and configs
 - building and running the docker
+
+docker commands:
+```
+docker build #from image to container
+docker run #run the container
+
+```

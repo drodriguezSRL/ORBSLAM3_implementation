@@ -57,6 +57,7 @@ RUN git clone https://github.com/stevenlovegrove/Pangolin.git && \
 
 # Install OpenCV 4.2.0 
 # use same workdir as pangolin
+# clone the opencv repository and install the 4.2.0 version
 RUN git clone https://github.com/opencv/opencv.git  opencv4 &&\
     cd opencv4 && \
     git checkout 4.2.0 && \
@@ -67,19 +68,18 @@ RUN git clone https://github.com/opencv/opencv.git  opencv4 &&\
     make -j$(nproc) && \
     make install
 
-# Install OpenCV 3.2.0 (ORB-SLAM3 compatible)
-RUN wget -q https://github.com/opencv/opencv/archive/3.2.0.zip && \
-    unzip 3.2.0.zip && cd opencv-3.2.0 && \
-    mkdir build && cd build && \
-    cmake -D CMAKE_BUILD_TYPE=RELEASE \
-          -D CMAKE_INSTALL_PREFIX=/usr/local \
-          -D WITH_TBB=ON \
-          -D BUILD_NEW_PYTHON_SUPPORT=ON \
-          -D WITH_V4L=ON \
-          -D INSTALL_C_EXAMPLES=ON \
-          -D INSTALL_PYTHON_EXAMPLES=ON \
-          -D BUILD_EXAMPLES=ON .. && \
-    make -j$(nproc) && make install && ldconfig
+# Install OpenCV 3.2.0
+# use same workdir as pangolin
+# clone the opencv repository and install the 3.2.0 version 
+RUN git clone https://github.com/opencv/opencv.git opencv3 && \
+    cd opencv3 && \
+    git checkout 3.2.0 && \
+    sed -i '1i\ #define AV_CODEC_FLAG_GLOBAL_HEADER (1 << 22)\n#define CODEC_FLAG_GLOBAL_HEADER AV_CODEC_FLAG_GLOBAL_HEADER\n#define AVFMT_RAWPICTURE 0x0020' modules/videoio/src/cap_ffmpeg_impl.hpp && \
+    mkdir build && \
+    cd build && \
+    cmake -D CMAKE_BUILD_TYPE=Release -D WITH_CUDA=OFF -D CMAKE_INSTALL_PREFIX=/usr/local .. && \
+    make -j$(nproc) &&\
+    make install
 
 # Clone and build ORB_SLAM3 (specific commit)
 RUN git clone https://github.com/UZ-SLAMLab/ORB_SLAM3.git && \

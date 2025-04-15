@@ -168,4 +168,15 @@ docker run -it -v $PWD/source:/my_source_code image-name # my_source_code is how
 ## Phase 2: Automate dataset download
 I'm going to write a bash script to download the `EuRoC MH_01_easy`dataset, unzip it, and detect and fix all corrupted images.
 
-- [ ] Create the download_euroc_mh01.sh file
+- [x] Create the download_euroc_mh01.sh file
+
+### Download Example Data: EuRoC MH_01 easy
+
+Run the following command:
+
+```
+./download_euroc_mh01.sh
+```
+
+Running the dataset setup script should be done before building and runnin the docker.
+

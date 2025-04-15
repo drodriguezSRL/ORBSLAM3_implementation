@@ -103,13 +103,20 @@ docker-compose run orbslam3-spell #runs a one-time interactive instance of the c
 #optional
 docker-compose up #starts all the services/containers in the background (e.g, ROS2 + GPU + SLAM pipeline)
 ```
-
-#### Build Pangolin
+#### Wrap all dependencies
+##### Build Pangolin
 Pangolin is a lightweight C++ library for visualization and GUI. You can use it to display 3D camera trajectories, render the map, show keyframes and landmarks, and provie a real-time GUI window to interact with the SLAM pipeline. 
 
 Pangolin is a hard dependency. The visual side of ORB-SLAM3 won't work without it. 
 
 Pangolin is cloned inside the [Dockerfile](docker/Dockerfile).
+
+##### Install OpenCV
+Based on Kevin Robb's implementation instructions, we need to:
+1. Clone OpenCV twice: versions 4.2.0 and 3.2.0
+2. Make a small manual patch to both versions of a source file
+3. Build and install each version separately
+4. Rename one to avoid conflict
 
 
 

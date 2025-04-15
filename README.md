@@ -81,7 +81,7 @@ After this I need
 - [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
 - [ ] (optional) how to include GPU support (CUDA)
 
-#### Write the dockerfile
+#### Write the dockerfile backbone
 
 Dockerfile can be found [here](docker/Dockerfile).
 
@@ -104,9 +104,14 @@ docker-compose run orbslam3-spell #runs a one-time interactive instance of the c
 docker-compose up #starts all the services/containers in the background (e.g, ROS2 + GPU + SLAM pipeline)
 ```
 
+#### Build Pangolin
+Pangolin is a lightweight C++ library for visualization and GUI. You can use it to display 3D camera trajectories, render the map, show keyframes and landmarks, and provie a real-time GUI window to interact with the SLAM pipeline. 
+
+Pangolin is a hard dependency. The visual side of ORB-SLAM3 won't work without it. 
 
 
 
+---
 docker commands (to be removed later on):
 ```
 docker image sl  #list all images, also docker images

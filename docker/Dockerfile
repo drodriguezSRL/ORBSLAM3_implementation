@@ -43,10 +43,17 @@ RUN pip install --upgrade pip && \
     pip install -r py-requirements.txt
 
 # Install Pangolin (specific commit)
+# 1- create a build directory
+WORKDIR /root/Dev
+# 2- clone the Pangolin repository
 RUN git clone https://github.com/stevenlovegrove/Pangolin.git && \
-    cd Pangolin && git checkout 86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d && \
-    mkdir build && cd build && \
-    cmake .. && make -j$(nproc) && make install
+    cd Pangolin && \
+    git checkout 86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d && \
+    mkdir build && \
+    cd build && \
+    cmake .. _DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && \
+    make install
 
 # Install OpenCV 3.2.0 (ORB-SLAM3 compatible)
 RUN wget -q https://github.com/opencv/opencv/archive/3.2.0.zip && \

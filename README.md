@@ -109,6 +109,8 @@ Pangolin is a lightweight C++ library for visualization and GUI. You can use it 
 
 Pangolin is a hard dependency. The visual side of ORB-SLAM3 won't work without it. 
 
+Pangolin is cloned inside the [Dockerfile](docker/Dockerfile).
+
 
 
 ---

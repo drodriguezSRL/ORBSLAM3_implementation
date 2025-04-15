@@ -77,15 +77,15 @@ Instad of following Kevin Robb's setup, I'm going to build a docker around the O
 After this I need
 - [ ] build the docker image 
 - [ ] run the container
-- [ ] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
-- [ ] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
+- [x] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
+- [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
 - [ ] (optional) how to include GPU support (CUDA)
 
 #### Write the dockerfile
 
 Dockerfile can be found [here](docker/Dockerfile).
 
-Created a [docker-compose](docker/docker-compose.yml) file. With this file I can avoid having to type long `docker run` like those needed to mount volumes (e.g., `docker run -i container-name -v ~/ORBSLAM3_implementation/src:/app`).
+Created a [docker-compose](docker/docker-compose.yml) file. With this file I can avoid having to type long `docker run` like those needed to mount volumes (e.g., `docker run -i container-name -v ~/ORBSLAM3_implementation/src:/app`). This file describes the services, volumes, networks, enviornment, and how to build and run everything in my environment.
 
 In this YAML file I can define:
 - how to build the Dockerfile into an image
@@ -96,14 +96,14 @@ In this YAML file I can define:
 
 Instead of writing long `docker build` and `docker run` commands, I can just run:
 ```
-docker-compose up
+cd docker
+docker-compose build #builds the docker image(s) defined in the compose file
+docker-compose run orbslam3-spell #runs a one-time interactive instance of the container; last argument is the service (container) name
+
+#optional
+docker-compose up #starts all the services/containers in the background (e.g, ROS2 + GPU + SLAM pipeline)
 ```
 
-All I need to do to run the docker container through the compose file:
-```
-cd docker
-docker-compose run orbslam3-spell #last argument is the service name
-```
 
 
 

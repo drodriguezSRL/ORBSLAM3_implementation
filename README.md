@@ -129,7 +129,12 @@ The last step is not needed if we clone and build both versions in separate fold
 > If you want help switching between the two versions within ORB-SLAM3 builds, I can show you how to do that in the `CMakeLists.txt` using `OpenCV_DIR` environment variables.
 
 ##### Install ORB-SLAM3
-to be done...
+Based on Kevin Robb's implementation instructions, we need to:
+1. Clone the repo
+2. Checkout the exact commit
+3. Path the files (LoopClosing.h, System.cc, CMakeList.txt)
+4. Run the `build.sh` script
+5. Handle possible build hiccups (retry if needed)
 
 ---
 docker commands (to be removed later on):
@@ -160,3 +165,7 @@ docker exec -it container-name ls #run other commands inside a container, in thi
 docker run -it -v $PWD/source:/my_source_code image-name # my_source_code is how the directory source will be named inside the docker image (the copy of the folder will be renamed as my_source_code)
 
 ```
+## Phase 2: Automate dataset download
+I'm going to write a bash script to download the `EuRoC MH_01_easy`dataset, unzip it, and detect and fix all corrupted images.
+
+- [ ] Create the download_euroc_mh01.sh file

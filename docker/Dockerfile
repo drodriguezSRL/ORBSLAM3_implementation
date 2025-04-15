@@ -81,14 +81,31 @@ RUN git clone https://github.com/opencv/opencv.git opencv3 && \
     make -j$(nproc) &&\
     make install
 
-# Clone and build ORB_SLAM3 (specific commit)
+# Clone and build ORB_SLAM3
+# same workdir /root/Dev
+# 1. clone and checkout specific commit (an older version of orbslam3)
 RUN git clone https://github.com/UZ-SLAMLab/ORB_SLAM3.git && \
-    cd ORB_SLAM3 && git checkout ef9784101fbd28506b52f233315541ef8ba7af57 && \
-    sed -i '51s/std::map/std::map<KeyFrame \*const, g2o::Sim3, std::less<KeyFrame \*const>, Eigen::aligned_allocator<std::pair<KeyFrame \*const, g2o::Sim3> > >/' src/LoopClosing.h && \
-    sed -i 's/find_package(OpenCV 4.2)/find_package(OpenCV 3.2)/' CMakeLists.txt && \
-    sed -i '584s/^/Map\* pBiggerMap = nullptr;\n/' src/System.cc && \
-    sed -i '701s/^/Map\* pBiggerMap = nullptr;\n/' src/System.cc && \
-    chmod +x build.sh && ./build.sh
+    cd ORB_SLAM3 && \
+    git checkout ef9784101fbd28506b52f233315541ef8ba7af57
+WORKDIR /root/Dev/ORB_SLAM3
+# this version appears to have some compilation errors that need to be fixed:
+# 2. fix line in LoopClosing.h
+RUN sed -i '51s|Eigen::aligned_allocator<std::pair<const KeyFrame\*, g2o::Sim3> > > KeyFrameAndPose;|Eigen::aligned_allocator<std::pair<KeyFrame *const, g2o::Sim3> > > KeyFrameAndPose;|' ./include/LoopClosing.h
+# 3. fix OpenCV version in CMakeLists.txt
+RUN sed -i 's/find_package(OpenCV REQUIRED)/find_package(OpenCV 3.2)/' CMakeLists.txt
+# 4. fix uninitialized pointer issue in System.cc (2 locations)
+RUN sed -i '584s|Map\* pBiggerMap;|Map* pBiggerMap = nullptr;|' ./src/System.cc && \
+    sed -i '701s|Map\* pBiggerMap;|Map* pBiggerMap = nullptr;|' ./src/System.cc
+# NOTE: This latter error allowed the examples to run fine, but they caused a segmentation fault at the very end when trying to save the map.
+# 5. build the project (retry if needed)
+# NOTE: It will likely show errors. So I just run it 5 times without changing anything, hoping it should succeed after a few attempts. I capture build logs for debugging in build_log.txt just in case.
+RUN chmod +x build.sh && \
+    bash -c '\
+    for i in {1..5}; do \
+        echo "Build attempt #$i";\
+        ./build.sh >> build_log.txt 2>&1 && break || sleep 5; \
+    done' 
+
 
 # Set the default command to bash
 CMD ["bash"]

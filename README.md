@@ -83,7 +83,29 @@ After this I need
 
 #### Write the dockerfile
 
-Dockerfile can be found [here](Dockerfile).
+Dockerfile can be found [here](docker/Dockerfile).
+
+Created a [docker-compose](docker/docker-compose.yml) file. With this file I can avoid having to type long `docker run` like those needed to mount volumes (e.g., `docker run -i container-name -v ~/ORBSLAM3_implementation/src:/app`).
+
+In this YAML file I can define:
+- how to build the Dockerfile into an image
+- how to run the container
+- what volumes to mount
+- what environment variable sto use
+- more (networks, multiple services, ports...)
+
+Instead of writing long `docker build` and `docker run` commands, I can just run:
+```
+docker-compose up
+```
+
+All I need to do to run the docker container through the compose file:
+```
+cd docker
+docker-compose run orbslam3-spell #last argument is the service name
+```
+
+
 
 docker commands (to be removed later on):
 ```

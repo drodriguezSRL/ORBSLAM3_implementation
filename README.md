@@ -107,7 +107,7 @@ docker exec -it container-name /bun/bash #open a new terminal within a container
 docker exec -it container-name ls #run other commands inside a container, in this case 'ls'
 
 # how to access and work on files outside the container
-# assume we have a local directory called source/my-source.py
+# assume we have a local directory called source/something.py
 docker run -it -v $PWD/source:/my_source_code image-name # my_source_code is how the directory source will be named inside the docker image (the copy of the folder will be renamed as my_source_code)
 
 ```

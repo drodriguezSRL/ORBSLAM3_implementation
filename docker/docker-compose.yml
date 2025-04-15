@@ -9,6 +9,7 @@ services:
       - ../src:/app
       - ../config:/config
       - ../data:/data
+      - ../Datasets/EuRoc/MH01:/data/MH01
     working_dir: /app
     stdin_open: true # docker run -i
     tty: true # docker run -t

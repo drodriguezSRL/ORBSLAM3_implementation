@@ -3,7 +3,7 @@
 set -e  # Exit on error
 
 # === Configuration ===
-DATASET_DIR=~/Datasets/EuRoc
+DATASET_DIR=~/data/EuRoc
 ZIP_URL="http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.zip"
 ZIP_NAME="MH_01_easy.zip"
 TARGET_DIR="${DATASET_DIR}/MH01"

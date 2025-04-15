@@ -10,6 +10,9 @@ I'm going to follow the implementation by kevin-robb: https://github.com/kevin-r
 
 ### System preparation
 
+>[!NOTE]
+> The following WSL installation was only used during development. 
+
 - [x] Install a fresh Ubuntu 20.04 on a virtual machine
 
 >[!TIP]
@@ -49,7 +52,7 @@ ls
 >[!IMPORTANT]
 > It's important to understand that the home directory in Ubuntu/WSL is not the same as your Windows home directory, nor should it be. Your Ubuntu home directory is in a virtual SSD provided by WSL. This virtual SSD provides the Linux compatible filesystem that Ubuntu needs, whereas your Windows drive is formatted as NTFS and won't have 100% compatibility.
 
-- [] Install dependencies
+- [ ] Install dependencies -- not sure if I will end needing to do this.
 
 Install the following necessary packages:
 
@@ -60,28 +63,26 @@ I'm going to deviate from Kevin Robbs's setup and attempt to build everything wi
 
 ### Setup docker
 
-I need to do the following
-1. Writing a base Dockerfile for Ubuntu 20.04
-2. Adding all system dependencies
-3. Building OpenCV from source
-4. Installing Pangolin+Eigen 
-5. Cloning and building ORB-SLAM3
+Instad of following Kevin Robb's setup, I'm going to build a docker around the ORBSLAM3 implementation.This docker should
 
-#### Write a dockerfile
+- [ ] Start from an Ubuntu 20.04 image
+- [ ] Install all `apt` dependencies
+- [ ] Install OpenCV 4.2 and 3.2 from source
+- [ ] Build Pangolin 
+- [ ] Build ORBSLAM3 with patches
+- [ ] Install python dependencies in the image
+- [ ] Mount my datasets/configs via volumes
+- [ ] Optional: include ROS support 
 
-A dockerfile is a blueprint for building a complete ORB-SLAM3 environment.
+After this I need
+- [ ] build the docker image 
+- [ ] run the container
+- [ ] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
+- [ ] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
 
-DONE
+#### Write the dockerfile
 
-next steps:
-- building the docker image `docker build -t orbslam3`
-- run the container `docker run -it --rm orbslam3`
-
-optional next steps I don't fully understand yet:
-- add a `docker-compose.yml` file to run it including local datasets, any custom config files...
-- a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
-- mounting specific datasets and configs
-- building and running the docker
+Dockerfile can be found [here](Dockerfile).
 
 docker commands (to be removed later on):
 ```

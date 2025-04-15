@@ -79,6 +79,7 @@ After this I need
 - [ ] run the container
 - [ ] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
 - [ ] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
+- [ ] (optional) how to include GPU support (CUDA)
 
 #### Write the dockerfile
 

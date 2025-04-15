@@ -83,9 +83,31 @@ optional next steps I don't fully understand yet:
 - mounting specific datasets and configs
 - building and running the docker
 
-docker commands:
+docker commands (to be removed later on):
 ```
-docker build #from image to container
-docker run #run the container
+docker image sl  #list all images, also docker images
+docker image pull # pull image from docker hub e.g., docker image pull ros:humble; it also works with docker pull
+docker image rm name-image #remove image; if a container is already built you can force delete by adding -f after rm; also works with docker rmi name-image
+
+docker image build -t image-name . #from image to container, also works with docker build; note '.' for current directory 
+
+docker container ls #list containers; also works with docker ps 
+
+docker run image-name #run the container
+docker run -it image-name #to request a terminal inside the container not just run it
+
+docker container stop container-name # stop a container; docker will give containers random names but you can also give it a name of your choosing with --name <container-name> <image-name>
+
+docker run -i container-name # (re)start a container
+
+docker container rm container-name #remove container; also works with docker rm
+docker contianer prune #delete all containers
+
+docker exec -it container-name /bun/bash #open a new terminal within a container (to open more than one terminal)
+docker exec -it container-name ls #run other commands inside a container, in this case 'ls'
+
+# how to access and work on files outside the container
+# assume we have a local directory called source/my-source.py
+docker run -it -v $PWD/source:/my_source_code image-name # my_source_code is how the directory source will be named inside the docker image (the copy of the folder will be renamed as my_source_code)
 
 ```

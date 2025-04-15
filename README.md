@@ -118,6 +118,18 @@ Based on Kevin Robb's implementation instructions, we need to:
 3. Build and install each version separately
 4. Rename one to avoid conflict
 
+The last step is not needed if we clone and build both versions in separate folders `opencv4`and `opencv3` from the start.
+
+>[!CAUTION]
+> The two OpenCV installs will conflict if you try to use both at the same time. So you should:
+> - Either link only the one you need in your CMake project
+> - or set up CMake options to use specific OpenCV versions via `OpenCV_DIR`
+
+>[!TIP]
+> If you want help switching between the two versions within ORB-SLAM3 builds, I can show you how to do that in the `CMakeLists.txt` using `OpenCV_DIR` environment variables.
+
+
+
 
 
 ---

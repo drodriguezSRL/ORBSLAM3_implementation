@@ -33,6 +33,7 @@ fi
 unzip -o "$ZIP_NAME" -d "$TARGET_DIR"
 
 # === Fix corrupted images (if necessary) ===
+# this may not be necessary...
 echo "🩹 Checking and fixing known corrupt images..."
 cd "$TARGET_DIR/mav0/cam0/data"
 

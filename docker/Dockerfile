@@ -107,5 +107,11 @@ RUN chmod +x build.sh && \
     done' 
 
 
-# Set the default command to bash
+# Set the default command to bash (good for dibuggin)
 CMD ["bash"]
+
+# OPTION: use an entry point to run the example use case with EuRoc dataset MH01
+# I can also use ENTRYPOINT ["/bin/bash","./entrypoint.sh"] for additional flexibility
+# COPY entrypoint.sh ./entrypoint.sh
+# RUN chmod +x ./entrypoint.sh
+# ENTRYPOINT [ "./entrypoint.sh" ]

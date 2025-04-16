@@ -81,13 +81,13 @@ I'm going to deviate from Kevin Robbs's setup and attempt to build everything wi
 
 Instad of following Kevin Robb's setup, I'm going to build a docker around the ORBSLAM3 implementation.This docker should
 
-- [ ] Start from an Ubuntu 20.04 image
-- [ ] Install all `apt` dependencies
-- [ ] Install OpenCV 4.2 and 3.2 from source
-- [ ] Build Pangolin 
-- [ ] Build ORBSLAM3 with patches
-- [ ] Install python dependencies in the image
-- [ ] Mount my datasets/configs via volumes
+- [x] Start from an Ubuntu 20.04 image
+- [x] Install all `apt` dependencies
+- [x] Install OpenCV 4.2 and 3.2 from source
+- [x] Build Pangolin 
+- [x] Build ORBSLAM3 with patches
+- [x] Install python dependencies in the image
+- [x] Mount my datasets/configs via volumes
 - [ ] Optional: include ROS support 
 
 After this I need

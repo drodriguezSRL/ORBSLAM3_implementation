@@ -3,10 +3,10 @@
 set -e  # Exit on error
 
 # === Configuration ===
-DATASET_DIR=~/data/EuRoc
+DATASET_DIR=./data/EuRoc
 ZIP_URL="http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.zip"
 ZIP_NAME="MH_01_easy.zip"
-TARGET_DIR="${DATASET_DIR}/MH01"
+TARGET_DIR="./MH01"
 
 # === Create directory ===
 mkdir -p "$DATASET_DIR"
@@ -19,6 +19,17 @@ wget -c "$ZIP_URL" -O "$ZIP_NAME"
 # === Unzip ===
 echo "📦 Unzipping dataset..."
 mkdir -p "$TARGET_DIR"
+if ! command -v unzip &> /dev/null; then
+  echo "🔍 unzip command not found, installing..."
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    sudo apt-get update && sudo apt-get install -y unzip
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install unzip
+  else
+    echo "⚠️ Unsupported OS. Please install unzip manually."
+    exit 1
+  fi
+fi
 unzip -o "$ZIP_NAME" -d "$TARGET_DIR"
 
 # === Fix corrupted images (if necessary) ===

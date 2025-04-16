@@ -6,6 +6,22 @@ Last updated: Dec 2021
 
 I'm going to follow the implementation by kevin-robb: https://github.com/kevin-robb/orb_slam_implementation
 
+## Phase 0: Clone this repo
+```
+git clone https://github.com/drodriguezSRL/ORBSLAM3-implementation
+```
+
+run the dataset setup script
+```
+bash download_euroc_mh01.sh
+```
+This downloads, unzips, and fixes the EuRoC dataset and places it (say) in `~/Datasets/EuRoc/MH01`.
+
+build and run docker
+```
+docker-compose up --build
+```
+
 ## Phase 1: Environment Setup
 
 ### System preparation

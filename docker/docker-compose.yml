@@ -1,5 +1,5 @@
 services:
-  obrslam3-spell:
+  orbslam3-spell:
     build:
       context: .
       dockerfile: Dockerfile

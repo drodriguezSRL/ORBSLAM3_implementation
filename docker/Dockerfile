@@ -8,39 +8,42 @@ WORKDIR /root
 
 # Install system dependencies
 RUN apt-get update && \
+    apt-get install -y software-properties-common &&\
+    add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main" &&\
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential \ 
     cmake \ 
     git \
     libgtk2.0-dev \ 
+    pkg-config \
     libavcodec-dev \ 
     libavformat-dev \
     libswscale-dev \
+    python-dev \ 
+    python-numpy \
     libtbb2 \ 
     libtbb-dev \ 
     libjpeg-dev \ 
     libpng-dev \ 
     libtiff-dev \
     libdc1394-22-dev \ 
+    libjasper-dev \
     libglew-dev \ 
     libboost-all-dev \ 
     libssl-dev \
     libeigen3-dev \
     libcanberra-gtk-module \ 
-    libatlas-base-dev \
-    libsuitesparse-dev \
-    pkg-config \
-    python3-dev \ 
-    python3-pip \
-    python3-venv \
     unzip\
     wget && \ 
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages globally
-COPY py-requirements.txt ./
-RUN pip install --upgrade pip && \
-    pip install -r py-requirements.txt
+#COPY py-requirements.txt ./
+#RUN pip install --upgrade pip && \
+    #pip install -r py-requirements.txt
 
 # Install Pangolin (specific commit)
 # 1- create a build directory
@@ -98,13 +101,13 @@ RUN sed -i '584s|Map\* pBiggerMap;|Map* pBiggerMap = nullptr;|' ./src/System.cc 
     sed -i '701s|Map\* pBiggerMap;|Map* pBiggerMap = nullptr;|' ./src/System.cc
 # NOTE: This latter error allowed the examples to run fine, but they caused a segmentation fault at the very end when trying to save the map.
 # 5. build the project (retry if needed)
-# NOTE: It will likely show errors. So I just run it 5 times without changing anything, hoping it should succeed after a few attempts. I capture build logs for debugging in build_log.txt just in case.
-RUN chmod +x build.sh && \
-    bash -c '\
-    for i in {1..5}; do \
-        echo "Build attempt #$i";\
-        ./build.sh >> build_log.txt 2>&1 && break || sleep 5; \
-    done' 
+# NOTE: It will likely show errors. So I just run it 3 times without changing anything, hoping it should succeed after a few attempts. I capture build logs for debugging in build_log.txt just in case.
+# RUN chmod +x build.sh && \
+    #bash -c '\
+    #for i in {1..3}; do \
+        #echo "Build attempt #$i";\
+        #./build.sh >> build_log.txt 2>&1 && break || sleep 5; \
+    #done' 
 
 
 # Set the default command to bash (good for dibuggin)

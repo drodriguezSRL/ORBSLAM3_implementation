@@ -171,7 +171,7 @@ docker container stop container-name # stop a container; docker will give contai
 docker run -i container-name # (re)start a container
 
 docker container rm container-name #remove container; also works with docker rm
-docker contianer prune #delete all containers
+docker container prune #delete all containers
 
 docker exec -it container-name /bun/bash #open a new terminal within a container (to open more than one terminal)
 docker exec -it container-name ls #run other commands inside a container, in this case 'ls'
@@ -208,13 +208,19 @@ WARNINGS:
 
 ERRORS: 
 - [E1] Build requires input about geography zone
-- [E2] RUN git clone https://github.com/stevenlovegrove/Pangolin.git &&     cd Pangolin &&     git checkout 86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d &&     mkdir build &&     cd build &&     cmake .. *_DCMAKE_BUILD_TYPE=Release* &&     make -j$(nproc) &&     make install
+- [E2] RUN git clone https://github.com/stevenlovegrove/Pangolin.git && ...cmake .. *_DCMAKE_BUILD_TYPE=Release* && make -j$(nproc) && make install
+- [E3] OpenCV 3.2.0 and python compiler version mismatch 
+- [E4] WSL appears to crash when running build.sh for ORBSLAM. This could be due to memory or CPU limits being exceeded (long build + heavy script)
+- [E5] `what(): Pangolin X11: Failed to open X display`: ORB-SLAM3 application (which uses Pangolin for visualization) is trying to open a graphical window, but can’t access the host's X display (your graphical environment).
 
 
 ACTIONS:
 - [W1] Remove version for `docker-compose.yml`
 - [E1] Add `DEBIAN_FRONTEND=noninteractive` to `Dockerfile` 
 - [E2] Fix typo in `Dockerfile`, from `_DCMAKE_BUILD_TYPE=Release` to `-D CMAKE_BUILD_TYPE=Release`
+- [E3] Before changing anything major, I checked the libraries installed and some didn't match Kevin's implementation. Changed `Dockerfile` to match Kevin's to the letter. Fixed.
+- [E4] Checkiong current WSL limits. Extended WSL memory in `.wslconfig` to 8GB. Stil crushing. Could be due to building from VSCode? Trying to build container without running ORBSLAM3 `build.sh`. Success. Trying to run container in PowerShell and build ORBSLAM3 from whithin. Lots of errors and warnings. Run it 3 times. Built ORBSLAM3 succesfully after 3 attempts. No changes made. 
+- [E5] Pangolin relies on X11, the Linux windowing system. Inside Docker, there's no GUI access by default, unless we give it permission.
 
 
 

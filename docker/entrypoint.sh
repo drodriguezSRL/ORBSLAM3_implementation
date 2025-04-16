@@ -3,7 +3,7 @@ set -e # immediate exit on error
 
 # === Config ===
 VOCAB="./Vocabulary/ORBvoc.txt"
-DATASET="~/data/EuRoc/MH01"
+DATASET="/data/EuRoc/MH01"
 DATASET_NAME="dataset-MH01"
 TIME_BASE="./Examples"
 CONFIG_BASE="./Examples"

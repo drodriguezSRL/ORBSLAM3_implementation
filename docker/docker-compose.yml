@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   obrslam3-spell:
     build:

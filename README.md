@@ -208,11 +208,13 @@ WARNINGS:
 
 ERRORS: 
 - [E1] Build requires input about geography zone
+- [E2] RUN git clone https://github.com/stevenlovegrove/Pangolin.git &&     cd Pangolin &&     git checkout 86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d &&     mkdir build &&     cd build &&     cmake .. *_DCMAKE_BUILD_TYPE=Release* &&     make -j$(nproc) &&     make install
 
 
 ACTIONS:
 - [W1] Remove version for `docker-compose.yml`
 - [E1] Add `DEBIAN_FRONTEND=noninteractive` to `Dockerfile` 
+- [E2] Fix typo in `Dockerfile`, from `_DCMAKE_BUILD_TYPE=Release` to `-D CMAKE_BUILD_TYPE=Release`
 
 
 

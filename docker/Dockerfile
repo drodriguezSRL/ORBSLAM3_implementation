@@ -51,7 +51,7 @@ RUN git clone https://github.com/stevenlovegrove/Pangolin.git && \
     git checkout 86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d && \
     mkdir build && \
     cd build && \
-    cmake .. _DCMAKE_BUILD_TYPE=Release && \
+    cmake .. -D CMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) && \
     make install
 

@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      -  DISPLAY=${DISPLAY}
     volumes:
       - ../src:/app
       - ../config:/config

@@ -199,6 +199,23 @@ Running the dataset setup script should be done before building and runnin the d
 
 ### testing
 
+- [ ] docker build and run container
+
+#### T1.00
+First build time: 
+WARNINGS:
+- [W1] `WARN[0000] /home/rodriguez/ORBSLAM3_implementation/docker/docker-compose.yml: the attribute "version" is obsolete, it will be ignored, please remove it to avoid potential confusion`
+
+ERRORS: 
+- [E1] Build requires input about geography zone
+
+
+ACTIONS:
+- [W1] Remove version for `docker-compose.yml`
+- [E1] Add `DEBIAN_FRONTEND=noninteractive` to `Dockerfile` 
+
+
+
 - [ ] debug with euroc mh01 dataset
 - [ ] try it out on windows terminal
 - [ ] adapt to other common datasets

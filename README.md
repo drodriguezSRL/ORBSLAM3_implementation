@@ -196,3 +196,10 @@ Run the following command:
 
 Running the dataset setup script should be done before building and runnin the docker.
 
+
+### testing
+
+- [ ] debug with euroc mh01 dataset
+- [ ] try it out on windows terminal
+- [ ] adapt to other common datasets
+- [ ] adapt to spice hl3

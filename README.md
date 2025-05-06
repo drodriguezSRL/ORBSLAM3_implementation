@@ -61,7 +61,9 @@ Within the container, choose one of the following ro tun. A map viewer as well a
 ./Examples/Stereo-Inertial/stereo_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo-Inertial/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereoi
 ```
 
-![Image](docs/images/orbslam3_examples_mapviewer.png)
+![Image](/docs/images/orbslam3_example_mapviewer.PNG)
 
-![Image](docs/images/orbslam3_examples_imageviewer.png)
+![Image](/docs/images/orbslam3_example_imageviewer.PNG)
+
+
 

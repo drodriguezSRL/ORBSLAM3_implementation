@@ -1,262 +1,67 @@
 # ORBSLAM3_implementation
-My own attempt at implementing ORBSLAM3
+This contains a working Docker implementation of ORB-SLAM3. This implementation is heavily based on [Kevin Robb's](https://github.com/kevin-robb/orb_slam_implementation).
 
-Original repo: https://github.com/UZ-SLAMLab/ORB_SLAM3 
-Last updated: Dec 2021
+Original ORB-SLAM3 repo: [https://github.com/UZ-SLAMLab/ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3) 
+Original repo was last updated: Dec 2021
 
-I'm going to follow the implementation by kevin-robb: https://github.com/kevin-robb/orb_slam_implementation
+For a exhaustive description of how this implementation was developed and a list of what still remains to be implemented, check [how_was_it_made](how_was_it_made.md).
 
-## Phase 0: Clone this repo
+## Step 1: Setup
+
+Clone this repository
+
 ```
 git clone https://github.com/drodriguezSRL/ORBSLAM3-implementation
 ```
 
-run the dataset setup script
+Run the dataset setup script. This downloads, unzips, and fixes the EuRoC dataset and places it (say) in `~/Datasets/EuRoc/MH01`.
+
 ```
 bash download_euroc_mh01.sh
 ```
-This downloads, unzips, and fixes the EuRoC dataset and places it (say) in `~/Datasets/EuRoc/MH01`.
 
-build and run docker
-```
-docker-compose up --build
-```
-
-## Phase 1: Environment Setup
-
-### System preparation
-
->[!NOTE]
-> The following WSL installation was only used during development. 
-
-- [x] Install a fresh Ubuntu 20.04 on a virtual machine
-
->[!TIP]
-> Make sure you allocate at least 16GB of RAM and 4 CPU cores to the virtual machine. 32GB of RAM is recommended.
-
-I'm going to run Ubuntu on [Windows Subsytem for Linux (WSL)](https://documentation.ubuntu.com/wsl/en/latest/) instead than on a virtual machine like VMware Workstation. 
-
-WSL enables us to run a GNU/Linux environment on Windows. Once installed, Ubuntu can be used as a terminal interface on Windows and can launch any linux-native applications.
-
-IF you don't have the latest WSL install you can run in the command line as administrator the following
-```
-> wsl --install
-``` 
-
-To install Ubuntu 20.04 runn
-```
-> wsl --install -d Ubuntu-20.04
-``` 
-
-You can check all the different distributions install on your Windows machines by typing `> wsl -l -v`
-
-To open Ubuntu, run `> ubuntu2004.exe` in the command line. 
-
-Make sure to install all the latest updates by runnign the following commands
-
-```
-$ sudo apt update
-$ sudo apt full-upgrade -y
-```
-
-To access your local documents in your Windows PC from an Ubuntu terminal using WSL, you can run the following command from an Ubuntu terminal:
-
-```
-cd /mnt/c/Users/<your_Windows_username>
-ls
-```
->[!IMPORTANT]
-> It's important to understand that the home directory in Ubuntu/WSL is not the same as your Windows home directory, nor should it be. Your Ubuntu home directory is in a virtual SSD provided by WSL. This virtual SSD provides the Linux compatible filesystem that Ubuntu needs, whereas your Windows drive is formatted as NTFS and won't have 100% compatibility.
-
---- 
-**NOTE ON HYPER-V**
-
-In the event that your windows systems has hypervisor disabled (e.g., in the event that you need to run programs such as TwinCAT incompatible with virtualization enviornments), you can turn it back on by opening a PowerShell in admin mode and running the following command:
-
-```
-bcdedit /set hypervisorlaunchtype auto
-```
-
-The change will take effect after restarting your computer. 
-
-Important Considerations:
-- Virtualization-based Security (VBS): Disabling Hyper-V can also disable VBS, which can impact security features. 
-- Reverting the change: To switch Hyper-V off again, use `bcdedit /set hypervisorlaunchtype off` in the command line and reboot. 
-- Other methods: You can also disable Hyper-V through the "Turn Windows features on or off" settings, says [Learn Microsoft](https://learn.microsoft.com/en-us/troubleshoot/windows-client/application-management/virtualization-apps-not-work-with-hyper-v).  
----
-
-
-- [ ] Install dependencies -- not sure if I will end needing to do this.
-
-Install the following necessary packages:
-
-- Build tools: `build-essential`, `cmake`, and `git`.
-- Libraries: `libgtk2.0-dev`, `pkg-config`, `libavcodec-dev`, `libavformat-dev`, `libswscale-dev`, `python-dev`, `python-numpy`, `libtbb2`, `libtbb-dev`, `libjpeg-dev`, `libpng-dev`, `libtiff-dev`, `libdc1394-22-dev`, `libjasper-dev`, `libglew-dev`, `libboost-all-dev`, `libssl-dev`, `libeigen3-dev`, and `libcanberra-gtk-module`.
-
-I'm going to deviate from Kevin Robbs's setup and attempt to build everything with docker instead. 
-
-### Setup docker
-
-Instad of following Kevin Robb's setup, I'm going to build a docker around the ORBSLAM3 implementation.This docker should
-
-- [x] Start from an Ubuntu 20.04 image
-- [x] Install all `apt` dependencies
-- [x] Install OpenCV 4.2 and 3.2 from source
-- [x] Build Pangolin 
-- [x] Build ORBSLAM3 with patches
-- [x] Install python dependencies in the image
-- [x] Mount my datasets/configs via volumes
-- [ ] Optional: include ROS support 
-
-After this I need
-- [ ] build the docker image 
-- [ ] run the container
-- [x] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
-- [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose?
-- [ ] (optional) how to include GPU support (CUDA)
-
-#### Write the dockerfile backbone
-
-Dockerfile can be found [here](docker/Dockerfile).
-
-Created a [docker-compose](docker/docker-compose.yml) file. With this file I can avoid having to type long `docker run` like those needed to mount volumes (e.g., `docker run -i container-name -v ~/ORBSLAM3_implementation/src:/app`). This file describes the services, volumes, networks, enviornment, and how to build and run everything in my environment.
-
-In this YAML file I can define:
-- how to build the Dockerfile into an image
-- how to run the container
-- what volumes to mount
-- what environment variable sto use
-- more (networks, multiple services, ports...)
-
-Instead of writing long `docker build` and `docker run` commands, I can just run:
+Build and run the Dockerfile through docker-compose
 ```
 cd docker
-docker-compose build #builds the docker image(s) defined in the compose file
-docker-compose run orbslam3-spell #runs a one-time interactive instance of the container; last argument is the service (container) name
-
-#optional
-docker-compose up #starts all the services/containers in the background (e.g, ROS2 + GPU + SLAM pipeline)
-```
-#### Wrap all dependencies
-##### Build Pangolin
-Pangolin is a lightweight C++ library for visualization and GUI. You can use it to display 3D camera trajectories, render the map, show keyframes and landmarks, and provie a real-time GUI window to interact with the SLAM pipeline. 
-
-Pangolin is a hard dependency. The visual side of ORB-SLAM3 won't work without it. 
-
-Pangolin is cloned inside the [Dockerfile](docker/Dockerfile).
-
-##### Install OpenCV
-Based on Kevin Robb's implementation instructions, we need to:
-1. Clone OpenCV twice: versions 4.2.0 and 3.2.0
-2. Make a small manual patch to both versions of a source file
-3. Build and install each version separately
-4. Rename one to avoid conflict
-
-The last step is not needed if we clone and build both versions in separate folders `opencv4`and `opencv3` from the start.
-
->[!CAUTION]
-> The two OpenCV installs will conflict if you try to use both at the same time. So you should:
-> - Either link only the one you need in your CMake project
-> - or set up CMake options to use specific OpenCV versions via `OpenCV_DIR`
-
->[!TIP]
-> If you want help switching between the two versions within ORB-SLAM3 builds, I can show you how to do that in the `CMakeLists.txt` using `OpenCV_DIR` environment variables.
-
-##### Install ORB-SLAM3
-Based on Kevin Robb's implementation instructions, we need to:
-1. Clone the repo
-2. Checkout the exact commit
-3. Path the files (LoopClosing.h, System.cc, CMakeList.txt)
-4. Run the `build.sh` script
-5. Handle possible build hiccups (retry if needed)
-
----
-docker commands (to be removed later on):
-```
-docker image sl  #list all images, also docker images
-docker image pull # pull image from docker hub e.g., docker image pull ros:humble; it also works with docker pull
-docker image rm name-image #remove image; if a container is already built you can force delete by adding -f after rm; also works with docker rmi name-image
-
-docker image build -t image-name . #from image to container, also works with docker build; note '.' for current directory 
-
-docker container ls #list active/running containers; also works with docker ps 
-docker  ps -a # list all containers even if stopped
-
-docker run image-name #run the container
-docker run -it image-name #to request a terminal inside the container not just run it
-
-docker container stop container-name # stop a container; docker will give containers random names but you can also give it a name of your choosing with --name <container-name> <image-name>
-docker container start -i container-name #re-start a container
-
-docker run -i container-name # (re)start a container
-
-docker container rm container-name #remove container; also works with docker rm
-docker container prune #delete all containers
-
-docker exec -it container-name /bun/bash #open a new terminal within a container (to open more than one terminal)
-docker exec -it container-name ls #run other commands inside a container, in this case 'ls'
-
-# how to access and work on files outside the container
-# assume we have a local directory called source/something.py
-docker run -it -v $PWD/source:/my_source_code image-name # my_source_code is how the directory source will be named inside the docker image (the copy of the folder will be renamed as my_source_code)
-
-```
-## Phase 2: Automate dataset download
-I'm going to write a bash script to download the `EuRoC MH_01_easy`dataset, unzip it, and detect and fix all corrupted images.
-
-- [x] Create the download_euroc_mh01.sh file
-
-### Download Example Data: EuRoC MH_01 easy
-
-Run the following command:
-
-```
-./download_euroc_mh01.sh
+docker-compose build 
+docker-compose run orbslam3-spell
 ```
 
-Running the dataset setup script should be done before building and runnin the docker.
+## Step2: Build ORB-SLAM3
 
+In its current version, the Docker container includes a cloned and fixed repository but unbuilt version of ORB-SLAM3. We need to build it inside the container. 
 
-### testing
+Within the container, run the following command:
 
-- [ ] docker build and run container
+```
+cd ~/Dev/ORB_SLAM3
+sh build.sh
+```
 
-#### T1.00
-First build time: 
-WARNINGS:
-- [W1] `WARN[0000] /home/rodriguez/ORBSLAM3_implementation/docker/docker-compose.yml: the attribute "version" is obsolete, it will be ignored, please remove it to avoid potential confusion`
+>[!IMPORTANT]
+> As indicated by Kevin Robb's implementation instructions, ORB-SLAM3 requires multiple builds before it can be succesfully built without any errors or warnings. In my experience, it often required between 3 to 5 builds (i.e, running the `sh build.sh` command) before it was successfully built. 
 
-ERRORS: 
-- [E1] Build requires input about geography zone
-- [E2] RUN git clone https://github.com/stevenlovegrove/Pangolin.git && ...cmake .. *_DCMAKE_BUILD_TYPE=Release* && make -j$(nproc) && make install
-- [E3] OpenCV 3.2.0 and python compiler version mismatch 
-- [E4] WSL appears to crash when running build.sh for ORBSLAM. This could be due to memory or CPU limits being exceeded (long build + heavy script)
-- [E5] `what(): Pangolin X11: Failed to open X display`: ORB-SLAM3 application (which uses Pangolin for visualization) is trying to open a graphical window, but can’t access the host's X display (your graphical environment). . 
+## Step 3: Run examples
 
+Once ORB-SLAM3 is built, we can run a few simulation examples from the EuRoc dataset previously downloaded. 
 
-ACTIONS:
-- [W1] Remove version for `docker-compose.yml`
-- [E1] Add `DEBIAN_FRONTEND=noninteractive` to `Dockerfile` 
-- [E2] Fix typo in `Dockerfile`, from `_DCMAKE_BUILD_TYPE=Release` to `-D CMAKE_BUILD_TYPE=Release`
-- [E3] Before changing anything major, I checked the libraries installed and some didn't match Kevin's implementation. Changed `Dockerfile` to match Kevin's to the letter. Fixed.
-- [E4] Checkiong current WSL limits. Extended WSL memory in `.wslconfig` to 8GB. Stil crushing. Could be due to building from VSCode? Trying to build container without running ORBSLAM3 `build.sh`. Success. Trying to run container in PowerShell and build ORBSLAM3 from whithin by running `sh build.sh` inside the `ORBSLAM-3`folder. Lots of errors and warnings. Run it 3 times. Built ORBSLAM3 succesfully after 3 attempts. No changes made. Name of the container `great_jackson`. 
-- [E5] Pangolin relies on X11, the Linux windowing system. Inside Docker, there's no GUI access by default, unless we give it permission. 
+Within the container, choose one of the following ro tun. A map viewer as well as an image viewer should appear during the simulation. Once done, a `f_dataset-MH01_...txt` and a `.txt` files are creating containing the camera complete estimated trajectory and keyframes trajectory, respectively. 
 
-First, we need to give permision to the `root` user to access X display by running `xhost +local:root` in the terminal where the Docker container will be run. We could also give permision to all local users with `xhost +local:` or even to all users with `xhost +`. Permissions can be revoked by the same commands simply swapping `+`for `-`. I'm going to create a basch script to simplify this workflow by running this command followed by running the container. 
+```
+# Mono
+./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Monocular/EuRoC_TimeStamps/MH01.txt dataset-MH01_mono
 
-We also need to expose the X domain socket. When running the container, we want to create a new volume that maps `/tmp/.X11-unix` to `:/tmp/.X11-unix:rw`. I included this within the `docker-compose.yml` volumes.
+# Mono + Inertial
+./Examples/Monocular-Inertial/mono_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular-Inertial/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_monoi
 
-The third thing we need is giving it at X display by setting up the X environment variable. We can tell docker to use the same one the host is using `--env=DISPLAY`. I included this argument within my `docker-compose.yml` environment as `DISPLAY=${DISPLAY}`. 
+# Stereo
+./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereo
 
+# Stereo + Inertial
+./Examples/Stereo-Inertial/stereo_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo-Inertial/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereoi
+```
 
->[!TIP]
-> We can also run the container as a user that has permision to access X display, e.g., run the container as a user that matches the host. 
+![Image](docs/images/orbslam3_examples_mapviewer.png)
 
-**Doing next**: I'm going to rebuild the image with the new changes, build ORBSLAM3 from within the container and see if I manage to run an example. 
+![Image](docs/images/orbslam3_examples_imageviewer.png)
 
-
-
-- [ ] debug with euroc mh01 dataset
-- [ ] try it out on windows terminal
-- [ ] adapt to other common datasets
-- [ ] adapt to spice hl3

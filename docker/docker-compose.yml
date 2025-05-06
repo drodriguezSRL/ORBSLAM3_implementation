@@ -8,8 +8,8 @@ services:
     volumes:
       - ../src:/app
       - ../config:/config
-      - ../data/EuRoc/MH01:/root/Datasets/Euroc/MH01
+      - ../data/EuRoc/MH01:/root/Datasets/EuRoc/MH01
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /app
     stdin_open: true # docker run -i
-    tty: true # docker run -t
+    tty: true # docker run -t 

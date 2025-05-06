@@ -68,6 +68,24 @@ ls
 >[!IMPORTANT]
 > It's important to understand that the home directory in Ubuntu/WSL is not the same as your Windows home directory, nor should it be. Your Ubuntu home directory is in a virtual SSD provided by WSL. This virtual SSD provides the Linux compatible filesystem that Ubuntu needs, whereas your Windows drive is formatted as NTFS and won't have 100% compatibility.
 
+--- 
+**NOTE ON HYPER-V**
+
+In the event that your windows systems has hypervisor disabled (e.g., in the event that you need to run programs such as TwinCAT incompatible with virtualization enviornments), you can turn it back on by opening a PowerShell in admin mode and running the following command:
+
+```
+bcdedit /set hypervisorlaunchtype auto
+```
+
+The change will take effect after restarting your computer. 
+
+Important Considerations:
+- Virtualization-based Security (VBS): Disabling Hyper-V can also disable VBS, which can impact security features. 
+- Reverting the change: To switch Hyper-V off again, use `bcdedit /set hypervisorlaunchtype off` in the command line and reboot. 
+- Other methods: You can also disable Hyper-V through the "Turn Windows features on or off" settings, says [Learn Microsoft](https://learn.microsoft.com/en-us/troubleshoot/windows-client/application-management/virtualization-apps-not-work-with-hyper-v).  
+---
+
+
 - [ ] Install dependencies -- not sure if I will end needing to do this.
 
 Install the following necessary packages:
@@ -161,12 +179,14 @@ docker image rm name-image #remove image; if a container is already built you ca
 
 docker image build -t image-name . #from image to container, also works with docker build; note '.' for current directory 
 
-docker container ls #list containers; also works with docker ps 
+docker container ls #list active/running containers; also works with docker ps 
+docker  ps -a # list all containers even if stopped
 
 docker run image-name #run the container
 docker run -it image-name #to request a terminal inside the container not just run it
 
 docker container stop container-name # stop a container; docker will give containers random names but you can also give it a name of your choosing with --name <container-name> <image-name>
+docker container start -i container-name #re-start a container
 
 docker run -i container-name # (re)start a container
 
@@ -211,7 +231,7 @@ ERRORS:
 - [E2] RUN git clone https://github.com/stevenlovegrove/Pangolin.git && ...cmake .. *_DCMAKE_BUILD_TYPE=Release* && make -j$(nproc) && make install
 - [E3] OpenCV 3.2.0 and python compiler version mismatch 
 - [E4] WSL appears to crash when running build.sh for ORBSLAM. This could be due to memory or CPU limits being exceeded (long build + heavy script)
-- [E5] `what(): Pangolin X11: Failed to open X display`: ORB-SLAM3 application (which uses Pangolin for visualization) is trying to open a graphical window, but can’t access the host's X display (your graphical environment).
+- [E5] `what(): Pangolin X11: Failed to open X display`: ORB-SLAM3 application (which uses Pangolin for visualization) is trying to open a graphical window, but can’t access the host's X display (your graphical environment). . 
 
 
 ACTIONS:
@@ -219,8 +239,20 @@ ACTIONS:
 - [E1] Add `DEBIAN_FRONTEND=noninteractive` to `Dockerfile` 
 - [E2] Fix typo in `Dockerfile`, from `_DCMAKE_BUILD_TYPE=Release` to `-D CMAKE_BUILD_TYPE=Release`
 - [E3] Before changing anything major, I checked the libraries installed and some didn't match Kevin's implementation. Changed `Dockerfile` to match Kevin's to the letter. Fixed.
-- [E4] Checkiong current WSL limits. Extended WSL memory in `.wslconfig` to 8GB. Stil crushing. Could be due to building from VSCode? Trying to build container without running ORBSLAM3 `build.sh`. Success. Trying to run container in PowerShell and build ORBSLAM3 from whithin. Lots of errors and warnings. Run it 3 times. Built ORBSLAM3 succesfully after 3 attempts. No changes made. 
-- [E5] Pangolin relies on X11, the Linux windowing system. Inside Docker, there's no GUI access by default, unless we give it permission. Included the `ENV DISPLAY=:0` to the `Dockerfile`. Also I need to configure X11 server access with `xhost +local:root` before running the docker container. Make sure to run `xhost -loca:root` to revoke access after.
+- [E4] Checkiong current WSL limits. Extended WSL memory in `.wslconfig` to 8GB. Stil crushing. Could be due to building from VSCode? Trying to build container without running ORBSLAM3 `build.sh`. Success. Trying to run container in PowerShell and build ORBSLAM3 from whithin by running `sh build.sh` inside the `ORBSLAM-3`folder. Lots of errors and warnings. Run it 3 times. Built ORBSLAM3 succesfully after 3 attempts. No changes made. Name of the container `great_jackson`. 
+- [E5] Pangolin relies on X11, the Linux windowing system. Inside Docker, there's no GUI access by default, unless we give it permission. 
+
+First, we need to give permision to the `root` user to access X display by running `xhost +local:root` in the terminal where the Docker container will be run. We could also give permision to all local users with `xhost +local:` or even to all users with `xhost +`. Permissions can be revoked by the same commands simply swapping `+`for `-`. I'm going to create a basch script to simplify this workflow by running this command followed by running the container. 
+
+We also need to expose the X domain socket. When running the container, we want to create a new volume that maps `/tmp/.X11-unix` to `:/tmp/.X11-unix:rw`. I included this within the `docker-compose.yml` volumes.
+
+The third thing we need is giving it at X display by setting up the X environment variable. We can tell docker to use the same one the host is using `--env=DISPLAY`. I included this argument within my `docker-compose.yml` environment as `DISPLAY=${DISPLAY}`. 
+
+
+>[!TIP]
+> We can also run the container as a user that has permision to access X display, e.g., run the container as a user that matches the host. 
+
+**Doing next**: I'm going to rebuild the image with the new changes, build ORBSLAM3 from within the container and see if I manage to run an example. 
 
 
 

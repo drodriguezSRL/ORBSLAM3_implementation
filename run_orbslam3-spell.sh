@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "🔐 Allowing Docker container to access the X server (for GUI support)..."
+echo "🔐 Allowing the root user (as used in the Docker container) to access the X display server (for GUI support)..."
 xhost +local:root
 
 echo "🐳 Starting the ORB-SLAM3 Docker container..."
-docker-compose run --rm orbslam3-spell
+docker-compose run orbslam3-spell
 
 echo "🔒 Revoking X server access from Docker (cleanup)..."
 xhost -local:root

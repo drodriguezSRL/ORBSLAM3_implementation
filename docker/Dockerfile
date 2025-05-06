@@ -6,9 +6,6 @@ FROM ubuntu:20.04
 # Set working directory
 WORKDIR /root
 
-# Set environment variable to use host's X11 display
-ENV DISPLAY=:0
-
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y software-properties-common &&\

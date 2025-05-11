@@ -45,7 +45,9 @@ sh build.sh
 
 Once ORB-SLAM3 is built, we can run a few simulation examples from the EuRoc dataset previously downloaded. 
 
-Within the container, choose one of the following ro tun. A map viewer as well as an image viewer should appear during the simulation. Once done, a `f_dataset-MH01_...txt` and a `.txt` files are creating containing the camera complete estimated trajectory and keyframes trajectory, respectively. 
+Within the container, choose one of the following to run. A map viewer as well as an image viewer should appear during the simulation. Once done, a `f_dataset-MH01_...txt` and a `kf_dataset-MH01_...txt` files are creating containing the camera complete estimated trajectory and keyframe trajectory, respectively. 
+
+For a detail description of this ORB-SLAM3 commands, check [orbslam3_explained](./orbslam3_explained.md). 
 
 ```
 # Mono

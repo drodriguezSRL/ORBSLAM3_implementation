@@ -1,11 +1,11 @@
 # How was ORBSLAM3_implementation done
 
 This describes how this ORBSLAM3 docker implementation was done. It includes all the bugs and workarounds that were needed to make it work.
-The goal of this file is to leave a record of everything that's behind what's included in this repository. 
+The goal of this file is to leave a record of everything that's behind the scenes of this repository. 
 I used this file as a log book of every step I took (and planned on taking, thus the present tense used at times) during development. 
 
 
-Since this was one of the first times for me working intensively with Docker, I created my own cheatlist of Docker commands, which can be found [here](#docker-commands). 
+Since this was one of the first times for me working intensively with Docker, I created my own cheatlist of Docker commands, which, in case you are a newbie like me, can be found [here](#docker-commands). 
 
 ## Phase 1: Environment setup
 
@@ -15,19 +15,19 @@ I'm going to run Ubuntu on [Windows Subsytem for Linux (WSL)](https://documentat
 
 WSL enables us to run a GNU/Linux environment on Windows. Once installed, Ubuntu can be used as a terminal interface on Windows and can launch any linux-native applications.
 
-IF you don't have the latest WSL install you can run in the command line as administrator the following:
+If you don't have the latest WSL install you can run in the command line as administrator the following:
 
 ```
-> wsl --install
+wsl --install
 ``` 
 
 To install Ubuntu 20.04 run:
 
 ```
-> wsl --install -d Ubuntu-20.04
+wsl --install -d Ubuntu-20.04
 ``` 
 
-You can check all the different distributions install on your Windows machines by typing `> wsl -l -v`
+You can check all the different distributions install on your Windows machine by typing `> wsl -l -v`. You can also check a list of all distributions available online for installation by running `wsl -l --online`. 
 
 To open Ubuntu, run in the command line:
  
@@ -35,7 +35,7 @@ To open Ubuntu, run in the command line:
 ubuntu2004.exe 
 ```
 
-Make sure to install all the latest updates by runnign the following commands
+Make sure to install all the latest updates by running the following commands
 
 ```
 $ sudo apt update
@@ -74,7 +74,7 @@ Important Considerations:
 
 ### Setup docker 
 
-Here is were I deviated from Kevin Robb's implementation. I ended up wrapping everything inside a Dockerfile.
+Here is where I deviated from Kevin Robb's implementation. I ended up wrapping everything inside a Dockerfile.
 
 The following is included in the [Dockerfile](docker/Dockerfile).
 
@@ -112,10 +112,10 @@ docker-compose run orbslam3-spell
 >[!NOTE]
 > Volumes are mounted when the container is run, not when the image is built. If you change volumes within the docker-compose file, simply re-running the container will apply those changes. We only need to rebuild images if changes are made to the `Dockerfile` itself.
 
-Optionally we can start all services/containers in the background (e.g., ROS2 + GPU + SLAM pipeline) with:
+Optionally we can (re)build the image and start the container all at once with `docker-compose up`. To do this in the background (aka 'detached mode') (e.g., ROS2 + GPU + SLAM pipeline) with:
 
 ```
-docker-compose up 
+docker-compose up -d
 ```
 
 ### Building the Dockerfile backbone
@@ -206,7 +206,7 @@ First, we need to give permision to the `root` user to access X display by runni
 
 We also need to expose the X domain socket. When running the container, we want to create a new volume that maps `/tmp/.X11-unix` to `:/tmp/.X11-unix:rw`. I included this within the `docker-compose.yml` volumes.
 
-The third thing we need is giving it at X display by setting up the X environment variable. We can tell docker to use the same one the host is using `--env=DISPLAY`. I included this argument within my `docker-compose.yml` environment as `DISPLAY=${DISPLAY}`. 
+The third thing we need is giving it an X display by setting up the X environment variable. We can tell docker to use the same one the host is using `--env=DISPLAY`. I included this argument within my `docker-compose.yml` environment as `DISPLAY=${DISPLAY}`. 
 
 >[!TIP]
 > We can also run the container as a user that has permision to access X display, e.g., run the container as a user that matches the host. 
@@ -224,6 +224,7 @@ Things I still need to do:
 - [ ] how to build ORBSLAM3 from within the Dockerfile
 - [ ] learn about adding sudo to docker
 - [ ] learn about adapting my own data to work with ORBSLAM3
+- [ ] mount a volume to place output trajectories so they are accessible from host
 - [x] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
 - [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose? --> written but haven't used it yet. not sure I need the permissions line.
 - [ ] (optional) what is `entrypoint.sh` for? how could I use it?

@@ -3,6 +3,7 @@ This contains a working Docker implementation of ORB-SLAM3. This implementation 
 
 Original ORB-SLAM3 repo: [https://github.com/UZ-SLAMLab/ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3) 
 Original repo was last updated: Dec 2021
+Check [orbslam3_explained](/orbslam3_explained.md) for useful details on ORB-SLAM3. 
 
 For a exhaustive description of how this implementation was developed and a list of what still remains to be implemented, check [how_was_it_made](how_was_it_made.md).
 

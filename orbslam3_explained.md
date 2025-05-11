@@ -15,7 +15,10 @@ As explained in the [README](/README.md) file, the following command line is nee
 - `./Examples/Stereo/EuRoC.yaml`: second command-line argument includes all a configuration file with all the camera parameters (intrinsics, extrinsics, distorsion, stereo baseline, etc.).
 - `~/Datasets/EuRoc/MH01`: third command-line argument defines the path to the dataset folder containing in this case data for the left and right stereo cameras. 
 - `./Examples/Stereo/EuRoC_TimeStamps/MH01.txt`: fourth command-line argument contains the timestamps of each stereo image pair. It is used to synchronize and load frames in the correct temporal order.
-- `dataset-MH01_stereo`: last command-line argument includes the name of the output folder/sequence name. 
+- `dataset-MH01_stereo`: last command-line argument includes the name of the output sequence name. These will be used to name the two output files (i.e., `f_dataset-MH01_stereo.txt` and `kf_dataset-MH01_stereo.txt`).
+
+>[!NOTE]
+> For details on ORB-SLAM3 executables, check [Executables](#executables). 
 
 ## ORB-SLAM3 Keyframes
 
@@ -61,3 +64,47 @@ Keyframes are important frames selected for creating the map structure (and used
 It has the same file structure as the frame trajectory output file: one line per keyframe, which includes timestamps, translation, and quaternion values for each keyframe.   
 
 This file is useful to evaluate the map structure and analyze graph optimization (how the system made decisions).
+
+## Executables
+
+Exectuables, such as `stereo_euroc.cc`, are used by ORB-SLAM3 to setup the environment for demos (aka "demo wrappers"), load data, and call into the real core of the SLAM system, which is implemented in the [ORB-SLAM3 library code](#orb-slam3-library-code).
+
+An example of an ORB-SLAM3 stereo executable can be found inside the docker under `ORB_SLAM3/Examples/Stereo`. 
+
+The file `stereo_euroc.cc` executable is used to run stereo visual SLAM on the EuRoC dataset. 
+
+The purpose of this executable is to:
+1. Load stereo image sequences and timestamps from EuRoC dataset folders.
+2. Load calibration parameters and rectify the images using these parameters.
+3. Feed them into ORB-SLAM3 for stereo tracking.
+4. Optionally save the resulting trajectories.
+
+## ORB-SLAM3 library code
+
+The core source code of the ORB-SLAM3 system is located in the main `src` and `include` directories. In `src` is where the actual ORB-SLAM3 algorithmic logic lives. The directory `include` hosts all the header files (`*.h`) required for the `*.cc` files in `src`.
+
+The main entry point to the ORB-SLAM3 is the `system.cc` file. It manages all subsystems (tracking, mapping, loop closing, etc.) and provides the key method, `SLAM.TrackStereo()`, which internally invokes the pipeline. 
+
+Here's a simplified example of what happens when you call `SLAM.TrackStereo()`:
+
+1. `System::TrackStereo()`
+2. `Tracking::GrabImageStereo()`
+3. `Tracking::Track()`
+4. (inside Track):
+    - ORB extraction
+    - Feature matching
+    - Pose estimation (PnP, motion model)
+    - Decision to add keyframe
+5. Keyframe passed to:
+    - `LocalMapping` for backend optimization
+    - `LoopClosing` for loop detection
+
+The following lists some of the key classes contained in ORB-SLAM3 source code:
+
+- `Tracking.cc`: contains the core SLAM pipeline logic and the heart of the frontend, including ORB feature extraction, frame tracking, pose estimation, keyframe decision-making, triangulation, and IMU integration (if used). 
+- `LocalMapping.cc`: running in a separate thread, it handles local bundle adjustment, new map point creation, and keyframe insertion logic (part of the backend)
+- `LoopClosing.cc`: another separate thread, responsible for detecting loops (revisiting previous locations), computing similarity transforms, and performing pose graph optimization.
+- `Map.cc`/`MapPoint.cc`/`KeyFrame.cc`: these classes manage the global map structure, the storage of 3D points and keyframes, and the graph structure (covisibility, spanning tree).
+- `Frame.cc`/`KeyFrame.cc`: they contain logic for feature matching, pose prediction, motion models, and IMU propagation (if applicable).
+- `Optimizer.cc`: implements bundle adjustment, pose graph opitmization, and g2o-based SLAM backend logic.
+- `ORBextractor.cc`: implements the ORB feature detection and description (FAST + BRIEF with orientation and scale invariance).

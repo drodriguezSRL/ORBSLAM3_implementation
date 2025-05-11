@@ -213,8 +213,33 @@ The third thing we need is giving it an X display by setting up the X environmen
 
 **Success**: name of the current container `docker-orbslam3-spell-run-ee6c1ca75dba`.
 
+## Phase 4: Comparing results for example case
 
-## Phase 4: What's next...
+ORB-SLAM3 generates two output files for each trajectory
+- `f_dataset-MH01_stereo.txt`
+- `kf_dataset-MH01_stereo.txt`
+
+So far, files are saved under the main `ORB_SLAM3` directory. It would be ideal if these files are saved in a folder accessible from the host. 
+
+I'm going to create a new volume `ouput` in the `docker-compose` file so that files are saved there after running ORB-SLAM3. Although I need to figure out where to modify the launch script so as to select the right output directory...
+
+Since this will require re-running the container (starting fresh), I will use `docker cp` to copy files from container to host. 
+
+I will need to hardcode a different path in the source code. In particular, I need to change where files are saved toward the end of the `main()` function in the demo executable. Replacing 
+
+```
+SLAM.SaveTrajectoryEuRoC(f_file);
+SLAM.SaveKeyFrameTrajectoryEuRoC(kf_file);
+```
+
+with
+
+```
+SLAM.SaveTrajectoryEuRoC(/your/output/path/f_file);
+SLAM.SaveKeyFrameTrajectoryEuRoC(/your/output/path/kf_file);
+```
+
+## Phase X: What's next...
 
 Things I still need to do:
 
@@ -263,5 +288,7 @@ docker exec -it container-name ls #run other commands inside a container, in thi
 # how to access and work on files outside the container
 # assume we have a local directory called source/something.py
 docker run -it -v $PWD/source:/my_source_code image-name # my_source_code is how the directory source will be named inside the docker image (the copy of the folder will be renamed as my_source_code)
+
+docker cp <container_id>:/path/in/container/file.txt /host/destination/ #copy files or directories form container to host
 
 ```

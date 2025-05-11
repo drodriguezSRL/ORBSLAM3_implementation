@@ -249,7 +249,7 @@ Things I still need to do:
 - [ ] how to build ORBSLAM3 from within the Dockerfile
 - [ ] learn about adding sudo to docker
 - [ ] learn about adapting my own data to work with ORBSLAM3
-- [ ] mount a volume to place output trajectories so they are accessible from host
+- [ ] mount a volume to place output trajectories so they are accessible from host --> left here!! files are copied to downloads. Try to evaluate output as indicated in Kevin's instructions
 - [x] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
 - [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose? --> written but haven't used it yet. not sure I need the permissions line.
 - [ ] (optional) what is `entrypoint.sh` for? how could I use it?

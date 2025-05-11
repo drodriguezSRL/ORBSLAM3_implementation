@@ -10,6 +10,7 @@ services:
       - ../config:/config
       - ../data/EuRoc/MH01:/root/Datasets/EuRoc/MH01
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../output:/root/output
     working_dir: /app
     stdin_open: true # docker run -i
     tty: true # docker run -t 

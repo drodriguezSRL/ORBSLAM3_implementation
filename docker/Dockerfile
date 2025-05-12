@@ -13,7 +13,8 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive && \ 
+    apt-get install -y --no-install-recommends \
     build-essential \ 
     cmake \ 
     git \
@@ -36,7 +37,10 @@ RUN apt-get update && \
     libssl-dev \
     libeigen3-dev \
     libcanberra-gtk-module \ 
+    sudo\ 
     unzip\
+    vim\
+    nano\
     wget && \ 
     apt-get clean && rm -rf /var/lib/apt/lists/*
 

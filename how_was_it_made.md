@@ -213,13 +213,13 @@ services:
 
 #### Enabling sudo 
 
-Add the following to the [Dockerfile](/docker/Dockerfile):
+Add the following to the [Dockerfile](/docker/Dockerfile) to enable `sudo` and grant root permissions to a specific user: 
 
 ```
 # set up sudo
 RUN apt-get udpate && \
     apt-get install -y sudo && \
-    echo $USERNAME ALL=\(roo\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+    echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME && \
     rm -rf /var/lib/apt/lists/*
 ```

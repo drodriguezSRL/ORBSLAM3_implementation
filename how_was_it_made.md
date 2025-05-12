@@ -322,7 +322,7 @@ Things I still need to do:
 - [x] build the docker image 
 - [x] run the container
 - [x] debug with euroc mh01 dataset
-- [ ] how to build ORBSLAM3 from within the Dockerfile
+- [x] how to build ORBSLAM3 from within the Dockerfile
 - [x] learn about creating a non-root user
 - [x] learn about adding sudo to docker
 - [ ] learn about adapting my own data to work with ORBSLAM3
@@ -335,9 +335,7 @@ Things I still need to do:
 - [ ] adapt to other common datasets
 - [ ] adapt to spice hl3
 
-
-
-
+next step: learn about entry point and networks..
 
 
 ## Docker commands [#docker-commands]

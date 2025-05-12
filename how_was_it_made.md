@@ -162,6 +162,68 @@ Based on Kevin Robb's implementation instructions, I need to:
 >[!WARNING]
 > I haven't been able (yet) to build ORB-SLAM3 into the Docker image. I manage to get it to work by building ORB-SLAM3 by hand within the container. 
 
+
+#### Adding a non-root user
+
+>[!NOTE]
+> No non-root user has been included in the latest version of the docker image.
+
+By default we operate inside the container with the `root` user (UID=0, GID=0). 
+
+If we wanted to create a new user, say `orbuser`, the following will need to be included in the [Dockerfile](/docker/Dockerfile):
+
+```
+ARG USERNAME=orbuser
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# create a non-root user
+RUN groupadd --gid $USER_GID $USERNAME && \ 
+    useradd -s /bin/bash --uid $USER_UID --gid $SUER_GID -m $USERNAME && \
+    mkdir /home/$USERNAME/.config && chown $USER_UID:$USER_GID /home/$USERNAME/.config
+
+
+RUN groupadd --gid $USER_GID $USERNAME && \
+    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME && \
+    chown -R $USERNAME:$USERNAME /app
+```
+
+In case we need to use the new user inside the docker file (to create new files with specific user permissions for istance), this can be done by adding the following to the [Dockerfile](/docker/Dockerfile):
+
+```
+# Switch to non-root user
+USER $USERNAME
+
+```
+
+Any other instructions that take place after that line will be issued as that user. To return to `root`(to install something, for instance), all you need to do is retype `USER root`.
+
+> [!TIP]
+> It is actually a good practice, if you are using non-root users in your Dockerfile, to end your Dockerfile by swapping back to the root user. This way, anyone else building off your image will do so from root. 
+
+Then in the [docker-compose](/docker/docker-compose.yml) file, include:
+
+```
+services:
+    orbslam3-spell:
+        ...
+        user: "1000:1000" # matches USER_UID:USER_GID in Dockerfile
+        ...
+```
+
+#### Enabling sudo 
+
+Add the following to the [Dockerfile](/docker/Dockerfile):
+
+```
+# set up sudo
+RUN apt-get udpate && \
+    apt-get install -y sudo && \
+    echo $USERNAME ALL=\(roo\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME && \
+    rm -rf /var/lib/apt/lists/*
+```
+
 ## Phase 2: Automate dataset download
 
 I'm going to write a bash script to download the `EuRoC MH_01_easy`dataset, unzip it, and detect and fix all corrupted images.
@@ -261,7 +323,8 @@ Things I still need to do:
 - [x] run the container
 - [x] debug with euroc mh01 dataset
 - [ ] how to build ORBSLAM3 from within the Dockerfile
-- [ ] learn about adding sudo to docker
+- [x] learn about creating a non-root user
+- [x] learn about adding sudo to docker
 - [ ] learn about adapting my own data to work with ORBSLAM3
 - [x] mount a volume to place output trajectories so they are accessible from host
 - [x] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
@@ -274,64 +337,7 @@ Things I still need to do:
 
 
 
-## Adding a non-root user
 
-root UID = 0
-By default we operate inside the container with the `root` user (UID=0, GID=0). 
-
-If we wanted to create a new user, say `orbuser`, the following will need to be included in the [Dockerfile](/docker/Dockerfile):
-
-```
-ARG USERNAME=orbuser
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-
-# create a non-root user
-RUN groupadd --gid $USER_GID $USERNAME && \ 
-    useradd -s /bin/bash --uid $USER_UID --gid $SUER_GID -m $USERNAME && \
-    mkdir /home/$USERNAME/.config && chown $USER_UID:$USER_GID /home/$USERNAME/.config
-
-
-RUN groupadd --gid $USER_GID $USERNAME && \
-    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME && \
-    chown -R $USERNAME:$USERNAME /app
-```
-
-In case we need to use the new user inside the docker file (to create new files with specific user permissions for istance), this can be done by adding the following to the [Dockerfile](/docker/Dockerfile):
-
-```
-# Switch to non-root user
-USER $USERNAME
-
-```
-
-Any other instructions that take place after that line will be issued as that user. To return to `root`(to install something, for instance), all you need to do is retype `USER root`.
-
-> [!TIP]
-> It is actually a good practice, if you are using non-root users in your Dockerfile, to end your Dockerfile by swapping back to the root user. This way, anyone else building off your image will do so from root. 
-
-Then in the [docker-compose](/docker/docker-compose.yml) file, include:
-
-```
-services:
-    orbslam3-spell:
-        ...
-        user: "1000:1000" # matches USER_UID:USER_GID in Dockerfile
-        ...
-```
-
-## enabling sudo 
-
-Add the following to the [Dockerfile](/docker/Dockerfile):
-
-```
-# set up sudo
-RUN apt-get udpate && \
-    apt-get install -y sudo && \
-    echo $USERNAME ALL=\(roo\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
-    chmod 0440 /etc/sudoers.d/$USERNAME && \
-    rm -rf /var/lib/apt/lists/*
-```
 
 
 ## Docker commands [#docker-commands]

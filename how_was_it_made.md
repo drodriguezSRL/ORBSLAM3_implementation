@@ -215,17 +215,17 @@ The third thing we need is giving it an X display by setting up the X environmen
 
 ## Phase 4: Comparing results for example case
 
-ORB-SLAM3 generates two output files for each trajectory
+ORB-SLAM3 generates two output files for each trajectory (+info in [orbslam3_explained](/orbslam3_explained.md)):
 - `f_dataset-MH01_stereo.txt`
 - `kf_dataset-MH01_stereo.txt`
 
-So far, files are saved under the main `ORB_SLAM3` directory. It would be ideal if these files are saved in a folder accessible from the host. 
+So far, files are saved under the main `ORB_SLAM3` directory. I don't think output files should be processed inside the container. Best would be for these files to be accessible from host and the postprocessing and evaluation to take place in host, instead. To make files accessible from host I have two options
 
-I'm going to create a new volume `ouput` in the `docker-compose` file so that files are saved there after running ORB-SLAM3. Although I need to figure out where to modify the launch script so as to select the right output directory...
+**A. Mount a new volume accessible from the outside and force ORB-SLAM's output to be saved there**
 
-Since this will require re-running the container (starting fresh), I will use `docker cp` to copy files from container to host. 
+For this, I could create a new volume `output` in the `docker-compose` file so that files are saved there after running ORB-SLAM3. 
 
-I will need to hardcode a different path in the source code. In particular, I need to change where files are saved toward the end of the `main()` function in the demo executable. Replacing 
+I will need to hardcode a different path in the source code so that ORB-SLAM3 saves the output in the right directory. In particular, I need to change where files are saved toward the end of the `main()` function in the demo executable (i.e., `stereo_euroc.cc` for instance). Replacing 
 
 ```
 SLAM.SaveTrajectoryEuRoC(f_file);
@@ -239,6 +239,20 @@ SLAM.SaveTrajectoryEuRoC(/your/output/path/f_file);
 SLAM.SaveKeyFrameTrajectoryEuRoC(/your/output/path/kf_file);
 ```
 
+**B. Manually copy the files from the container to a directory in the host**
+
+Since option A would require re-running the container (starting fresh), I could instead use `docker cp` to copy files from container to host. Running a command like:
+
+```
+docker cp <container_id>:/path/in/container/file.txt /host/destination/
+```
+
+Independently from which of these two options I choose (A or B), ORB-SLAM3 provides a script to evaluate the generated trajectory against the ground truth. This script can be found in `~/Dev/ORB_SLAM3/evaluation/evaluate_ate_scale.py`.
+
+>[!IMPORTANT]
+> From [ORB-SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3): it should be noted that EuRoC provides ground truth for each sequence in the IMU body reference. As pure visual executions report trajectories centered in the left camera, the script `evaluate_ate_scale.py` provides in the "evaluation" folder the transformation of the ground truth to the left camera reference. Visual-inertial trajectories use the ground truth from the dataset.
+
+
 ## Phase X: What's next...
 
 Things I still need to do:
@@ -249,7 +263,7 @@ Things I still need to do:
 - [ ] how to build ORBSLAM3 from within the Dockerfile
 - [ ] learn about adding sudo to docker
 - [ ] learn about adapting my own data to work with ORBSLAM3
-- [ ] mount a volume to place output trajectories so they are accessible from host --> left here!! files are copied to downloads. Try to evaluate output as indicated in Kevin's instructions
+- [x] mount a volume to place output trajectories so they are accessible from host
 - [x] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
 - [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose? --> written but haven't used it yet. not sure I need the permissions line.
 - [ ] (optional) what is `entrypoint.sh` for? how could I use it?
@@ -257,6 +271,67 @@ Things I still need to do:
 - [ ] try it out on windows terminal
 - [ ] adapt to other common datasets
 - [ ] adapt to spice hl3
+
+
+
+## Adding a non-root user
+
+root UID = 0
+By default we operate inside the container with the `root` user (UID=0, GID=0). 
+
+If we wanted to create a new user, say `orbuser`, the following will need to be included in the [Dockerfile](/docker/Dockerfile):
+
+```
+ARG USERNAME=orbuser
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# create a non-root user
+RUN groupadd --gid $USER_GID $USERNAME && \ 
+    useradd -s /bin/bash --uid $USER_UID --gid $SUER_GID -m $USERNAME && \
+    mkdir /home/$USERNAME/.config && chown $USER_UID:$USER_GID /home/$USERNAME/.config
+
+
+RUN groupadd --gid $USER_GID $USERNAME && \
+    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME && \
+    chown -R $USERNAME:$USERNAME /app
+```
+
+In case we need to use the new user inside the docker file (to create new files with specific user permissions for istance), this can be done by adding the following to the [Dockerfile](/docker/Dockerfile):
+
+```
+# Switch to non-root user
+USER $USERNAME
+
+```
+
+Any other instructions that take place after that line will be issued as that user. To return to `root`(to install something, for instance), all you need to do is retype `USER root`.
+
+> [!TIP]
+> It is actually a good practice, if you are using non-root users in your Dockerfile, to end your Dockerfile by swapping back to the root user. This way, anyone else building off your image will do so from root. 
+
+Then in the [docker-compose](/docker/docker-compose.yml) file, include:
+
+```
+services:
+    orbslam3-spell:
+        ...
+        user: "1000:1000" # matches USER_UID:USER_GID in Dockerfile
+        ...
+```
+
+## enabling sudo 
+
+Add the following to the [Dockerfile](/docker/Dockerfile):
+
+```
+# set up sudo
+RUN apt-get udpate && \
+    apt-get install -y sudo && \
+    echo $USERNAME ALL=\(roo\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME && \
+    rm -rf /var/lib/apt/lists/*
+```
 
 
 ## Docker commands [#docker-commands]

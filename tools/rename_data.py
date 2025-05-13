@@ -1,4 +1,4 @@
-# This script renames files in a specified directory by extracting a timestamp from the filename and converting it to nanoseconds.
+# This script renames files in a specified directory by extracting a timestamp from the filename and converting it to nanoseconds to match the EuRoC dataset format.
 
 import os
 import re
@@ -17,12 +17,12 @@ def main():
         print(f"Error: The path {data_folder_path} is not a valid directory.")
         return
 
-    name_pattern = re.compile(r"stereo\_(\w+)\_(\d+\.\d+)\_0")
+    name_pattern = re.compile(r"stereo\_(\w+)\_(\d+\.\d+)\_(\d+)\.png")
 
     for filename in os.listdir(data_folder_path):
         match = name_pattern.match(filename)
         if match:
-            timestamp_str = match.group(1) # extract timestamp
+            timestamp_str = match.group(2) # extract timestamp
             try:
                 timestamp_ns = int(float(timestamp_str) * 1e9) # convert to nanoseconds
                 new_filename = f"{timestamp_ns}.png"

@@ -315,6 +315,314 @@ Independently from which of these two options I choose (A or B), ORB-SLAM3 provi
 > From [ORB-SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3): it should be noted that EuRoC provides ground truth for each sequence in the IMU body reference. As pure visual executions report trajectories centered in the left camera, the script `evaluate_ate_scale.py` provides in the "evaluation" folder the transformation of the ground truth to the left camera reference. Visual-inertial trajectories use the ground truth from the dataset.
 
 
+## Phase 5: Adapting my own data
+
+I'm going to try to adapt the [SPICE-HL3 dataset](https://github.com/spaceuma/spice-hl3) to work with ORB-SLAM3.
+
+The best strategy would be to try to emulate the layout and setup of the working example whose sensor configuration matches that of the new dataset. In this case that would be the Stereo+IMU configuration. 
+
+Make sure you understand the parsing of arguments when running the `stereo_inertial_euroc` example. More info [here](/orbslam3_explained.md). As a summary, we have:
+
+1. Executable wrapper: `stereo_inertial_euroc.cc` 
+2. Vocabulary: `ORBvoc.txt`
+3. Configuration: `EuRoc.yaml`
+4. Path to dataset: `~/Datasets/EuRoc/MH01`
+5. Timestamps: `MH01.txt`
+6. Output file name: `dataset-MH01_stereoi`
+
+### Adapting the executable
+
+I'm going to copy and adapt the `./Examples/Stereo-Inertial/stereo_inertial_euroc.cc` script to work with my own data. 
+
+First thing I will need to do is to create a new directory in `~/Dev/ORB_SLAM3/Examples/` called `spice-hl3`. 
+
+In this directory I will have to include the following:
+
+```bash
+spice-hl3
+    ├── spice-hl3.yaml
+    ├── stereo_inertial_spicehl3.cc
+    └── spicehl3_TimeStamps 
+        ├── trajectoryA.txt
+        ├── trajectoryB.txt
+        ├── ...
+        └── trajectoryG.txt
+```
+
+Then I need to create the `stereo_inertial_spicehl3.cc` from the original EuRoc executable. 
+
+- [ ] create spice-hl3 directory and transfer data
+- [ ] copy and adapt executable
+
+### ORB-SLAM3 vocabulary
+
+I will use the same one located at `~/Dev/ORB_SLAM3/Vocabulary/ORBvoc.txt`. 
+
+### Dataset configuration file
+
+ORB-SLAM3 requires loading a high-level dataset config wrapper file, e.g., `EuRoc.yaml`. This configuration file is written specifically to work with ORB-SLAM3. Contains only the subset of calibration and config values that ORB-SLAM3 needs:
+
+- Camera instrinsics
+- Distortion parameters
+- Camera resolution
+- IMU-to-camera extrinsics (`Tcb`)
+- IMU noise parameters (for preintegration)
+
+This file must be formatted specifically for ORB-SLAM3, using OpenCV YAML format and with specific keys it expects (e.g., `Camera.fx`, `IMU.noise_gyro`, etc.).
+
+- [ ] create high-level config file
+
+In the case of EuRoc, this is what `EuRoc.yaml` contains: 
+
+```yaml
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+Camera.type: "PinHole"
+
+# Camera calibration and distortion parameters (OpenCV) (equal for both cameras after stereo rectification)
+Camera.fx: 435.2046959714599
+Camera.fy: 435.2046959714599
+Camera.cx: 367.4517211914062
+Camera.cy: 252.2008514404297
+
+Camera.k1: 0.0
+Camera.k2: 0.0
+Camera.p1: 0.0
+Camera.p2: 0.0
+
+Camera.width: 752
+Camera.height: 480
+
+# Camera frames per second
+Camera.fps: 20.0
+
+# stereo baseline times fx
+Camera.bf: 47.90639384423901
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Close/Far threshold. Baseline times.
+ThDepth: 35.0 # 35
+
+# Transformation from camera 0 to body-frame (imu)
+Tbc: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+   data: [0.0148655429818, -0.999880929698, 0.00414029679422, -0.0216401454975,
+         0.999557249008, 0.0149672133247, 0.025715529948, -0.064676986768,
+        -0.0257744366974, 0.00375618835797, 0.999660727178, 0.00981073058949,
+         0.0, 0.0, 0.0, 1.0]
+
+# IMU noise
+IMU.NoiseGyro: 1.7e-04 # 1.6968e-04
+IMU.NoiseAcc: 2.0e-03 # 2.0000e-3
+IMU.GyroWalk: 1.9393e-05
+IMU.AccWalk: 3.e-03 # 3.0000e-3
+IMU.Frequency: 200
+
+#--------------------------------------------------------------------------------------------
+# Stereo Rectification. Only if you need to pre-rectify the images.
+# Camera.fx, .fy, etc must be the same as in LEFT.P
+#--------------------------------------------------------------------------------------------
+LEFT.height: 480
+LEFT.width: 752
+LEFT.D: !!opencv-matrix
+   rows: 1
+   cols: 5
+   dt: d
+   data:[-0.28340811, 0.07395907, 0.00019359, 1.76187114e-05, 0.0]
+LEFT.K: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [458.654, 0.0, 367.215, 0.0, 457.296, 248.375, 0.0, 0.0, 1.0]
+LEFT.R:  !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [0.999966347530033, -0.001422739138722922, 0.008079580483432283, 0.001365741834644127, 0.9999741760894847, 0.007055629199258132, -0.008089410156878961, -0.007044357138835809, 0.9999424675829176]
+LEFT.Rf:  !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: f
+   data: [0.999966347530033, -0.001422739138722922, 0.008079580483432283, 0.001365741834644127, 0.9999741760894847, 0.007055629199258132, -0.008089410156878961, -0.007044357138835809, 0.9999424675829176]
+LEFT.P:  !!opencv-matrix
+   rows: 3
+   cols: 4
+   dt: d
+   data: [435.2046959714599, 0, 367.4517211914062, 0,  0, 435.2046959714599, 252.2008514404297, 0,  0, 0, 1, 0]
+
+RIGHT.height: 480
+RIGHT.width: 752
+RIGHT.D: !!opencv-matrix
+   rows: 1
+   cols: 5
+   dt: d
+   data:[-0.28368365, 0.07451284, -0.00010473, -3.555907e-05, 0.0]
+RIGHT.K: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [457.587, 0.0, 379.999, 0.0, 456.134, 255.238, 0.0, 0.0, 1]
+RIGHT.R:  !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [0.9999633526194376, -0.003625811871560086, 0.007755443660172947, 0.003680398547259526, 0.9999684752771629, -0.007035845251224894, -0.007729688520722713, 0.007064130529506649, 0.999945173484644]
+RIGHT.P:  !!opencv-matrix
+   rows: 3
+   cols: 4
+   dt: d
+   data: [435.2046959714599, 0, 367.4517211914062, -47.90639384423901, 0, 435.2046959714599, 252.2008514404297, 0, 0, 0, 1, 0]
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 1200
+
+# ORB Extractor: Scale factor between levels in the scale pyramid
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize:2
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500
+```
+
+### Understanding EuRoc data structure 
+
+The `Datasets/EuRoc/` directory has the following structure:
+
+```bash
+MH01
+    └── mav0
+        ├── body.yaml
+        ├── cam0
+        │   ├── data
+        │   ├── data.csv
+        │   └── sensor.yaml
+        ├── cam1
+        │   ├── data
+        │   ├── data.csv
+        │   └── sensor.yaml
+        ├── imu0
+        │   ├── data.csv
+        │   └── sensor.yaml
+        ├── leica0
+        │   ├── data.csv
+        │   └── sensor.yaml
+        └── state_groundtruth_estimate0
+            ├── data.csv
+            └── sensor.yaml
+
+```
+
+- Each of the `camX/data/` folders contain all the `.png` image files for both cameras (stereo). File names are based on their timestamp in nanoseconds, e.g., `1403636763663555584.png` (Jun 24, 2014 at 19:06:03 UTC; epoch Jan 1, 1970).  
+- Each `data.csv` file contains a two column tabular structure of the form
+    - for cameras: `timestamp, filename` (e.g.,`1403636763463555584,1403636763463555584.png`).
+    - for imu: `timestamp, ax, ay, az, gx, gy, gz`
+- Each `sensor.yaml` file contains raw sensor calibration data (intrinsics, distorsions, extrinsicsm and sensor-specific parameters such as IMU noise and bias characteristics). For example:
+
+**cam config file** 
+
+```yaml
+# General sensor definitions.
+sensor_type: camera
+comment: VI-Sensor cam0 (MT9M034)
+
+# Sensor extrinsics wrt. the body-frame.
+T_BS:
+  cols: 4
+  rows: 4
+  data: [0.0148655429818, -0.999880929698, 0.00414029679422, -0.0216401454975,
+         0.999557249008, 0.0149672133247, 0.025715529948, -0.064676986768,
+        -0.0257744366974, 0.00375618835797, 0.999660727178, 0.00981073058949,
+         0.0, 0.0, 0.0, 1.0]
+
+# Camera specific definitions.
+rate_hz: 20
+resolution: [752, 480]
+camera_model: pinhole
+intrinsics: [458.654, 457.296, 367.215, 248.375] #fu, fv, cu, cv
+distortion_model: radial-tangential
+distortion_coefficients: [-0.28340811, 0.07395907, 0.00019359, 1.76187114e-05]
+```
+
+**imu config file** 
+```yaml
+#Default imu sensor yaml file
+sensor_type: imu
+comment: VI-Sensor IMU (ADIS16448)
+
+# Sensor extrinsics wrt. the body-frame.
+T_BS:
+  cols: 4
+  rows: 4
+  data: [1.0, 0.0, 0.0, 0.0,
+         0.0, 1.0, 0.0, 0.0,
+         0.0, 0.0, 1.0, 0.0,
+         0.0, 0.0, 0.0, 1.0]
+rate_hz: 200
+
+# inertial sensor noise model parameters (static)
+gyroscope_noise_density: 1.6968e-04     # [ rad / s / sqrt(Hz) ]   ( gyro "white noise" )
+gyroscope_random_walk: 1.9393e-05       # [ rad / s^2 / sqrt(Hz) ] ( gyro bias diffusion )
+accelerometer_noise_density: 2.0000e-3  # [ m / s^2 / sqrt(Hz) ]   ( accel "white noise" )
+accelerometer_random_walk: 3.0000e-3    # [ m / s^3 / sqrt(Hz) ].  ( accel bias diffusion )
+```
+
+**state_groundtruth_estimate** 
+```yaml
+# Sensor extrinsics wrt. the body-frame. This is the transformation of the
+# tracking prima to the body frame.
+T_BS:
+  cols: 4
+  rows: 4
+  data: [1.0, 0.0, 0.0, 0.0,
+         0.0, 1.0, 0.0, 0.0,
+         0.0, 0.0, 1.0, 0.0,
+         0.0, 0.0, 0.0, 1.0]
+```
+
+>[!IMPORTANT]
+> Ensure data is synchronized properly, i.e., left and right images must be taken at the same time (or very close) and IMU data must be well-timed and match with image timestamps (interpolation may be needed otherwise).
+
+
+
+
+Run ORB-SLAM on a short part of my own dataset. Check
+- initialization success
+- trajectory ouput
+- tracking stability
+
+
+
 ## Phase X: What's next...
 
 Things I still need to do:
@@ -335,7 +643,7 @@ Things I still need to do:
 - [ ] adapt to other common datasets
 - [ ] adapt to spice hl3
 
-next step: learn about entry point and networks..
+next step: adapting data to work with orbslam3...
 
 
 ## Docker commands [#docker-commands]

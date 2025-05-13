@@ -360,7 +360,9 @@ spice-hl3
         └── trajectoryG.txt
 ```
 
-I need to modify the file name convention to match that of the EuRoc dataset: to go from `stereo_left_1726153517.476212590_0.png` (with timestamp in seconds) to `timestamp.png` (with timestamp in nanoseconds). For this, I created a [script](/tools/rename_data.py) that renames all the `cam0` and `cam1` files accordingly.
+I need to modify the file name convention to match that of the EuRoc dataset: to go from `stereo_left_1726153517.476212590_0.png` (with timestamp in seconds) to `timestamp.png` (with timestamp in nanoseconds). For this, I created a script called [rename_data](/tools/rename_data.py) that renames all the `cam0` and `cam1` files accordingly.
+
+I'm going to write a second script called [generate_csv](/tools/generate_csv.py) to create the `data.csv` files for each sensor by extracting timestamps and filenames from the newly renamed files.  
 
 Then I need to create the `stereo_inertial_spicehl3.cc` from the original EuRoc executable. 
 

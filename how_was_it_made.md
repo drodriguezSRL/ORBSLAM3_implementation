@@ -334,12 +334,23 @@ Make sure you understand the parsing of arguments when running the `stereo_inert
 
 I'm going to copy and adapt the `./Examples/Stereo-Inertial/stereo_inertial_euroc.cc` script to work with my own data. 
 
-First thing I will need to do is to create a new directory in `~/Dev/ORB_SLAM3/Examples/` called `spice-hl3`. 
+First thing I will need to do is to create a new directory, which I will create in the ' /data' folder that is later on mount to `~/Datasets`, that micmicks what's inside the docker at `~/Dev/ORB_SLAM3/Examples/`. This new directory will be called `spice-hl3`. 
 
 In this directory I will have to include the following:
 
 ```bash
 spice-hl3
+    ├── cam0
+    │   ├── data
+    │   ├── data.csv
+    │   └── sensor.yaml
+    ├── cam1
+    │   ├── data
+    │   ├── data.csv
+    │   └── sensor.yaml
+    ├── imu0
+    │   ├── data.csv
+    │   └── sensor.yaml
     ├── spice-hl3.yaml
     ├── stereo_inertial_spicehl3.cc
     └── spicehl3_TimeStamps 
@@ -349,9 +360,12 @@ spice-hl3
         └── trajectoryG.txt
 ```
 
+I need to modify the file name convention to match that of the EuRoc dataset: to go from `stereo_left_1726153517.476212590_0.png` (with timestamp in seconds) to `timestamp.png` (with timestamp in nanoseconds). For this, I created a [script](/tools/rename_data.py) that renames all the `cam0` and `cam1` files accordingly.
+
 Then I need to create the `stereo_inertial_spicehl3.cc` from the original EuRoc executable. 
 
 - [ ] create spice-hl3 directory and transfer data
+- [ ] adapt data formatting 
 - [ ] copy and adapt executable
 
 ### ORB-SLAM3 vocabulary

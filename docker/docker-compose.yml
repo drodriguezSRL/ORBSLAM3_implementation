@@ -9,7 +9,7 @@ services:
     volumes:
       - ../src:/app
       - ../config:/config
-      - ../data/EuRoc/MH01:/root/Datasets/EuRoc/MH01
+      - ../data:/root/Datasets/
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ../output:/root/output
     working_dir: /root

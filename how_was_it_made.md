@@ -376,6 +376,10 @@ I need to adapt the `data.csv` for the IMU as well. In this case, EuRoc creates 
 Whereas the SPICE-HL2 IMU data is saved in the following way `Time (s) | OrientationX | OrientationY  | OrientationZ | OrientationW | Angular_VelX (rad/s) | Angular_VelY (rad/s) | Angular_VelZ (rad/s) | Linear_AccX (m/s^2) | Linear_AccY (m/s^2) | Linear_AccZ (m/s^2) |Orientation Covariance | Velocity Covariance | Acceleration Covariance`. For this I wrote the script `convert_imu_csv.py`. 
 
 
+next --- adapt stereo-inertial_euroc.cc to also check what else needs to be changed. 
+It looks like TimeStamps are taken from MH01.txt which includes all the left camera timestamps.
+are other timestamps taken from data.csv files? otehrwise no need to adapt those..
+maybe I should have started by checking the execturable cc first.
 
 
 

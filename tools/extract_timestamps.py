@@ -12,4 +12,4 @@ def extract_timestamps(input_file, output_file):
             if parts:
                 outfile.write(parts[0] + '\n')
 
-extract_timestamps('/mnt/c/users/david/downloads/spice-hl3/cam0/data.csv', '/mnt/c/users/david/downloads/spice-hl3/spicehl3_timeStamps/trajecory_F.txt')
+extract_timestamps('/mnt/c/users/david/downloads/spice-hl3/cam0/data.csv', '/mnt/c/users/david/downloads/spice-hl3/spicehl3_timeStamps/trajectory_F.txt')

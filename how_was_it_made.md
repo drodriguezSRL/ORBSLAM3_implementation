@@ -374,18 +374,9 @@ I wrote the script `convert_imu_csv.py` to adapt the `data.csv` for the IMU as w
 
 Whereas the SPICE-HL2 IMU data is saved in the following way `Time (s) | OrientationX | OrientationY  | OrientationZ | OrientationW | Angular_VelX (rad/s) | Angular_VelY (rad/s) | Angular_VelZ (rad/s) | Linear_AccX (m/s^2) | Linear_AccY (m/s^2) | Linear_AccZ (m/s^2) |Orientation Covariance | Velocity Covariance | Acceleration Covariance`. 
 
+For the Timestamps file, it looks like timestamps are taken from the left camera data.csv. I created the new `trajectory_F.txt` file from spice-hl3's `cam0/data.csv` file using the [extract_timestamps](/tools/extract_timestamps.py) script.
 
-For the Timestamps file, it looks like timestamps are taken from the left camera data.csv. I created the new `trajectory_F.txt` file from the `cam0/data.csv` file using the [extract_timestamps](/tools/extract_timestamps.py) script.
-
-
-
-
-
-next --- adapt stereo-inertial_euroc.cc to also check what else needs to be changed. 
-It looks like TimeStamps are taken from MH01.txt which includes all the left camera timestamps.
-are other timestamps taken from data.csv files? otehrwise no need to adapt those..
-maybe I should have started by checking the execturable cc first.
-
+Lastly, we need to use info contained in the previous data and config files to build the `spice-hl3.yaml` file. This file should be adapted from the `EuRoC.yaml` configuration file.
 
 
 Dealing with sensor extrinsics

@@ -378,6 +378,26 @@ For the Timestamps file, it looks like timestamps are taken from the left camera
 
 Lastly, we need to use info contained in the previous data and config files to build the `spice-hl3.yaml` file. This file should be adapted from the `EuRoC.yaml` configuration file.
 
+For testing, I need to make the spice-hl3 directory I just created in host available within the container. I transferred the directory to the existing container with
+
+```
+docker cp /path/on/host your-container:/path/in/container
+```
+
+Later on I will mount it as a volume for the final implementation release. 
+-- I'm here...
+
+Now from inside the container I could run:
+
+```
+~/Datasets/spice-hl3/stereo_inertial_spicehl3.cc ./Vocabulary/ORBvoc.txt ~/Datasets/spice-hl3/spice-hl3.yaml ~/Datasets/spice-hl3 ~/Datasets/spice-hl3/spicehl3_TimeStamps/trajectory_F.txt dataset-spicehl3_trjF
+```
+
+> [!WARNING]
+> ISSUES:
+> /root/Datasets/spice-hl3/stereo_inertial_spicehl3.cc: line 1: /app: Is a directory 
+> /root/Datasets/spice-hl3/stereo_inertial_spicehl3.cc: line 2: syntax error near unexpected token `(' 
+> /root/Datasets/spice-hl3/stereo_inertial_spicehl3.cc: line 2: `* This file is part of David Rodríguez-Martínez (@dvdrodriguezSRL) implementation of ORB-SLAM3' 
 
 Dealing with sensor extrinsics
 EuRoC provides ground truth for each sequence in the IMU body reference. As pure visual executions report trajectories centered in the left camera, we provide in the "evaluation" folder the transformation of the ground truth to the left camera reference. Visual-inertial trajectories use the ground truth from the dataset. (see previous IMPOTANT NOTE)

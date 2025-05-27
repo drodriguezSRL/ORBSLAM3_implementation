@@ -319,7 +319,7 @@ Independently from which of these two options I choose (A or B), ORB-SLAM3 provi
 
 I'm going to try to adapt the [SPICE-HL3 dataset](https://github.com/spaceuma/spice-hl3) to work with ORB-SLAM3.
 
-I'm going to first attempt to adapt and run ORB-SLAM3 over SPICE-HL3 Trajectory F stereo-inertial data. 
+I'm going to first attempt to adapt and run ORB-SLAM3 over SPICE-HL3 **Trajectory F** stereo-inertial data. 
 
 The best strategy would be to try to emulate the layout and setup of the working example whose sensor configuration matches that of the new dataset. In this case that would be the Stereo+IMU configuration. 
 
@@ -366,14 +366,19 @@ I modified the file name convention to match that of the EuRoc dataset: to go fr
 
 I wrote a second script called [generate_csv](/tools/generate_csv.py) to create the `data.csv` files for each camera by extracting timestamps and filenames from the newly renamed files.  
 
-NEXT --- create data.csv for IMU!! 
-I need to adapt the `data.csv` for the IMU as well. In this case, EuRoc creates a files CSV file with the followign columns `Timestamp (ns) | wx (rad/s) | wy (rad/s) | wz (rad/s) | ax (m/s^2) | ay (m/s^2) | ay (m/s^2) | az (m/s^2)`. See an example row below:
+I wrote the script `convert_imu_csv.py` to adapt the `data.csv` for the IMU as well. In this case, EuRoc creates a files CSV file with the followign columns `Timestamp (ns) | wx (rad/s) | wy (rad/s) | wz (rad/s) | ax (m/s^2) | ay (m/s^2) | ay (m/s^2) | az (m/s^2)`. See an example row below:
 
 ```
 1403636579758555392,-0.099134701513277898,0.14730578886832138,0.02722713633111154,8.1476917083333333,-0.37592158333333331,-2.4026292499999999
 ```
 
-Whereas the SPICE-HL2 IMU data is saved in the following way `Time (s) | OrientationX | OrientationY  | OrientationZ | OrientationW | Angular_VelX (rad/s) | Angular_VelY (rad/s) | Angular_VelZ (rad/s) | Linear_AccX (m/s^2) | Linear_AccY (m/s^2) | Linear_AccZ (m/s^2) |Orientation Covariance | Velocity Covariance | Acceleration Covariance`. For this I wrote the script `convert_imu_csv.py`. 
+Whereas the SPICE-HL2 IMU data is saved in the following way `Time (s) | OrientationX | OrientationY  | OrientationZ | OrientationW | Angular_VelX (rad/s) | Angular_VelY (rad/s) | Angular_VelZ (rad/s) | Linear_AccX (m/s^2) | Linear_AccY (m/s^2) | Linear_AccZ (m/s^2) |Orientation Covariance | Velocity Covariance | Acceleration Covariance`. 
+
+
+For the Timestamps file, it looks like timestamps are taken from the left camera data.csv. I created the new `trajectory_F.txt` file from the `cam0/data.csv` file using the [extract_timestamps](/tools/extract_timestamps.py) script.
+
+
+
 
 
 next --- adapt stereo-inertial_euroc.cc to also check what else needs to be changed. 

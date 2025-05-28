@@ -332,9 +332,12 @@ Make sure you understand the parsing of arguments when running the `stereo_inert
 5. Timestamps: `MH01.txt`
 6. Output file name: `dataset-MH01_stereoi`
 
-### Adapting the executable
+>[!IMPORTANT]
+> The fastest strategy for making our own dataset work with ORB-SLAM3 is to rely on the already existing and compiled executables like `stereo_inertial_euroc`. It's recommended to use these same executable files when running ORB-SLAM3 since they are already compiled when ORB-SLAM3 is built. Therefore, we only need to adapt the directory structure to match the one expected by the executable to be used.  
 
-I'm going to copy and adapt the `./Examples/Stereo-Inertial/stereo_inertial_euroc.cc` script to work with my own data. 
+### Adapting the data directory
+
+I'm going to adapt the `spice-hl3` directory structure to work with the `./Examples/Stereo-Inertial/stereo_inertial_euroc.cc` launch file. 
 
 First thing I will need to do is to create a new directory, which I will create in the ' /data' folder that is later on mount to `~/Datasets`, that micmicks what's inside the docker at `~/Dev/ORB_SLAM3/Examples/`. This new directory will be called `spice-hl3`. 
 
@@ -342,25 +345,43 @@ In this directory I will have to include the following:
 
 ```bash
 spice-hl3
-    ├── cam0
-    │   ├── data
-    │   ├── data.csv
-    │   └── sensor.yaml
-    ├── cam1
-    │   ├── data
-    │   ├── data.csv
-    │   └── sensor.yaml
-    ├── imu0
-    │   ├── data.csv
-    │   └── sensor.yaml
+    ├── mav0
+    │   ├──cam0
+    │   │   ├── data
+    │   │   ├── data.csv
+    │   │   └── sensor.yaml
+    │   ├── cam1
+    │   │   ├── data
+    │   │   ├── data.csv
+    │   │   └── sensor.yaml
+    │   └── imu0
+    │       ├── data.csv
+    │       └── sensor.yaml
     ├── spice-hl3.yaml
-    ├── stereo_inertial_spicehl3.cc
     └── spicehl3_TimeStamps 
         ├── trajectoryA.txt
         ├── trajectoryB.txt
         ├── ...
         └── trajectoryG.txt
 ```
+
+>[!IMPORTANT]
+> The timestamps for both `cam0` (_left stereo camera_) and `cam1` (_right stereo camera_), including the `MH01.txt`(which is created from the timestamps of `cam0`), must be the same exact timestamps. This is key because ORB-SLAM3 will look for left and right camera images matching the timestamps listed in the `*.txt` timestamps file. 
+
+>[!CAUTION]
+> There is a total of 646 missing or mismatched timestamps between `cam0`and `cam1`in the `spice-hl3` dataset. I need to ensure both camera data are synchronized by timestamp; one image per timestamp from each camera.
+
+>**RESULTS FOR 10ms DIFFERENCE**
+> Total missing or mismatched timestamps: 646
+> Total closest timestamps found: 33
+> Cam0 Stats:
+>     Avg frame interval: 0.097036 s
+>     Frame rate: 10.31 FPS
+>     Interval std deviation: 0.102444 s
+> Cam1 Stats:
+>     Avg frame interval: 0.097036 s
+>     Frame rate: 10.31 FPS
+>     Interval std deviation: 0.102444 s
 
 I modified the file name convention to match that of the EuRoc dataset: to go from `stereo_left_1726153517.476212590_0.png` (with timestamp in seconds) to `timestamp.png` (with timestamp in nanoseconds). For this, I created a script called [rename_data](/tools/rename_data.py) that renames all the `cam0` and `cam1` files accordingly.
 
@@ -387,28 +408,15 @@ docker cp /path/on/host your-container:/path/in/container
 Later on I will mount it as a volume for the final implementation release. 
 -- I'm here...
 
-Now from inside the container I could run:
+Now from inside the container I could run any of the following commands run (note the use of the same euroc executable):
 
 ```
-~/Datasets/spice-hl3/stereo_inertial_spicehl3.cc ./Vocabulary/ORBvoc.txt ~/Datasets/spice-hl3/spice-hl3.yaml ~/Datasets/spice-hl3 ~/Datasets/spice-hl3/spicehl3_TimeStamps/trajectory_F.txt dataset-spicehl3_trjF
+# Stereo
+./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ~/Datasets/spice-hl3/spice-hl3.yaml ~/Datasets/spice-hl3 ~/Datasets/spice-hl3/spicehl3_TimeStamps/trajectory_F.txt dataset-spicehl3_trjF
+
+# Stereo-inertial
+./Examples/Stereo-Intertial/stereo_interial_euroc ./Vocabulary/ORBvoc.txt ~/Datasets/spice-hl3/spice-hl3.yaml ~/Datasets/spice-hl3 ~/Datasets/spice-hl3/spicehl3_TimeStamps/trajectory_F.txt dataset-spicehl3_trjF
 ```
-
-> [!WARNING]
-> ISSUES:
-> /root/Datasets/spice-hl3/stereo_inertial_spicehl3.cc: line 1: /app: Is a directory 
-> /root/Datasets/spice-hl3/stereo_inertial_spicehl3.cc: line 2: syntax error near unexpected token `(' 
-> /root/Datasets/spice-hl3/stereo_inertial_spicehl3.cc: line 2: `* This file is part of David Rodríguez-Martínez (@dvdrodriguezSRL) implementation of ORB-SLAM3' 
-
-Dealing with sensor extrinsics
-EuRoC provides ground truth for each sequence in the IMU body reference. As pure visual executions report trajectories centered in the left camera, we provide in the "evaluation" folder the transformation of the ground truth to the left camera reference. Visual-inertial trajectories use the ground truth from the dataset. (see previous IMPOTANT NOTE)
-
-In my case grond truth of each sequence is provided in the mocap coordinate frame
-
-Then I need to create the `stereo_inertial_spicehl3.cc` from the original EuRoc executable. 
-
-- [ ] create spice-hl3 directory and transfer data
-- [ ] adapt data formatting 
-- [ ] copy and adapt executable
 
 ### ORB-SLAM3 vocabulary
 
@@ -668,6 +676,35 @@ T_BS:
 
 >[!IMPORTANT]
 > Ensure data is synchronized properly, i.e., left and right images must be taken at the same time (or very close) and IMU data must be well-timed and match with image timestamps (interpolation may be needed otherwise).
+
+
+### Fixing IMU preintregration 
+
+When stereo-inertial was run for the first time, I got the following error: `Not preintegrated measurement`. 
+
+This suggests there is a problem related to the IMU preintegration step in the visual-inertial SLAM pipeline. The code expected to have preintegrated IMU measurements ready for optimization but found none (or an invalid/uninitialized state).
+
+#### What's IMU preintegration?
+
+Datasets will often include high-frequency IMU readings and lower-frequency camera frames. 
+
+SLAM pipelines like ORB-SLAM3 uses **IMU preintegration**, consisting of a mathematical process to efficiently combine multiple raw intertial measurements between two discrete time points (often between two camera keyframes) into a single summarized measument before optimizing the pose graph. 
+
+This summarized measurement captures the cumulative effect of the IMU's accelerations and angular velocitieis over that time interval. 
+
+The preintegration computes:
+- Relative rotation
+- Relative velocity
+- Relative position
+between two frames.
+
+#### Why's it needed?
+
+IMUs typically output data at hundreds or thousands of Hz, while camera frames come at tens of Hz. During SLAM optimization, you want to estimate the relative pose change between camera frames using the IMU data between them. Instead of including every single IMU measurement as a constraint (which would be huge and computationally expensive), you summarize all those IMU readings into one combined measurement.
+
+The preintegration accounts for IMU noise, biases, and the continuous-time dynamics, so the summarized measurement can be used in nonlinear optimization
+
+#### What can I do then?
 
 
 

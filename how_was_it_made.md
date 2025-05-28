@@ -706,7 +706,17 @@ The preintegration accounts for IMU noise, biases, and the continuous-time dynam
 
 #### What can I do then?
 
+- [ ] Check IMU data: Make sure IMU messages are present, timestamped, and properly formatted.
+- [ ] Check synchronization: Make sure camera and IMU timestamps are consistent and that data is fed in chronological order.
+- [ ] Review configuration files: Ensure the IMU noise parameters and extrinsic calibration are correct.
+- [ ] Use debugging logs: ORB-SLAM3 can output verbose logs that might show where the preintegration fails.
 
+
+IMU data rows:  15325 rows (excluding header)
+
+Camera data rows:  2532 rows (excluding header)
+
+IMU Frame rate: 49.67 FPS
 
 
 Run ORB-SLAM on a short part of my own dataset. Check

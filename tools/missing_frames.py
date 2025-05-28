@@ -33,7 +33,7 @@ def compute_frame_stats(timestamps, label):
     print(f"  Frame rate: {framerate:.2f} FPS")
     print(f"  Interval std deviation: {std_dev_s:.6f} s")
 
-def find_closest_timestamp(target, candidates, max_diff=5e6): # 5ms 
+def find_closest_timestamp(target, candidates, max_diff=5): # 5ns 
     """Find the closest timestamp in candidates to the target timestamp."""
     target = int(target)
     candidates = sorted(int(c) for c in candidates)
@@ -58,14 +58,14 @@ def find_missing_frames(file1, file2):
             closest_count += 1
             #time.sleep(1)
         else:
-             print(f"Missing: {ts} → No close match found (over 5ms difference)")
+             print(f"Missing: {ts} → No close match found (over 5ns difference)")
 
     print(f"\nTotal missing or mismatched timestamps: {len(missing_frames)}")
     print(f"\nTotal closest timestamps found: {closest_count}")
 
     # computing and printing framerate stats
     compute_frame_stats(frames1_list, "Cam0")
-    compute_frame_stats(frames1_list, "Cam1")
+    compute_frame_stats(frames2_list, "Imu0")
 
 def load_timestamps(filepath):
     with open(filepath, 'r') as f:
@@ -112,11 +112,12 @@ def clean_missing_timestamps(target, reference, image_dir):
     save_cleaned_csv(target, header, cleaned_rows)
 
 
-file1 = '/mnt/c/users/david/downloads/spice-hl3/new/cam0/data.csv'
-file2 = '/mnt/c/users/david/downloads/spice-hl3/new/cam1/data.csv'
-img_dir2 = '/mnt/c/users/david/downloads/spice-hl3/new/cam1/data/'
-img_dir1 = '/mnt/c/users/david/downloads/spice-hl3/new/cam0/data/'
+file1 = '/mnt/c/users/david/downloads/spice-hl3/mav0/cam0/data.csv'
+file2 = '/mnt/c/users/david/downloads/spice-hl3/mav0/cam1/data.csv'
+file3 = '/mnt/c/users/david/downloads/spice-hl3/mav0/imu0/data.csv'
+img_dir1 = '/mnt/c/users/david/downloads/spice-hl3/mav0/cam0/data/'
+img_dir2 = '/mnt/c/users/david/downloads/spice-hl3/mav0/cam1/data/'
 
-find_missing_frames(file1, file2)
+find_missing_frames(file1, file3)
 
 #clean_missing_timestamps(file1, file2, img_dir1)

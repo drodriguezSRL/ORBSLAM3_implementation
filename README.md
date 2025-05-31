@@ -65,9 +65,7 @@ For a detail description of these ORB-SLAM3 commands, check [orbslam3_explained]
 ./Examples/Stereo-Inertial/stereo_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo-Inertial/EuRoC.yaml ~/Datasets/EuRoc/MH01 ./Examples/Stereo-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereoi
 ```
 
-![Image](/docs/images/orbslam3_example_mapviewer.PNG)
-
-![Image](/docs/images/orbslam3_example_imageviewer.PNG)
+![Image](/docs/images/orbslam_euroc_mono.gif)
 
 ## Step 4: Adapt your own data 
 

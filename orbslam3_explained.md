@@ -1,6 +1,6 @@
 # ORB-SLAM3 Explained
 
-This file is intended to explain things related to what ORB-SLAM3 does in the background. 
+This file is intended to explain what ORB-SLAM3 does in the background. 
 
 ## Commands to run examples
 
@@ -24,7 +24,7 @@ As explained in the [README](/README.md) file, the following command line is nee
 
 Keyframes are the core structure of the map in SLAM systems. While normal frames are only used for tracking the current camera pose, keyframes are used for 3D map point creation and triangulation, loop closure, global optimization, and relocalization (if tracking is lost, keyframes are used to recover).  
 
-Keyframes are stored permanently (until culled) and connected in a co-visibility graph; i.e., a data structure that links keyframes sharing many 3D map points. Keyframes are used to improve memory usage, speeding up loop closure, and make optimization more efficient. 
+Keyframes are stored permanently (until "culled"; i.e. removed) and connected in a co-visibility graph; i.e., a data structure that links keyframes sharing many 3D map points. Keyframes are used to improve memory usage, speeding up loop closure, and make optimization more efficient. 
 
 So in summary, the system processes every frame for pose tracking, but only promotes important ones to keyframes to build and maintain the map efficiently. 
 
@@ -43,7 +43,7 @@ ORB-SLAM3 generates 2 output files:
 
 **f_dataset-name_sequence.txt**
 
-This file contains the camera poses for every frame (or image pair) processed during the run. It includes both tracked fgrames and possibly los frames (interpolated or untracked). 
+This file contains the camera poses for every frame (or image pair) processed during the run. It includes both tracked fgrames and possibly lost frames (interpolated or untracked). 
 
 This is useful for evaluating full motion over time. 
 
@@ -71,7 +71,7 @@ Exectuables, such as `stereo_euroc.cc`, are used by ORB-SLAM3 to setup the envir
 
 An example of an ORB-SLAM3 stereo executable can be found inside the docker under `ORB_SLAM3/Examples/Stereo`. 
 
-The file `stereo_euroc.cc` executable is used to run stereo visual SLAM on the EuRoC dataset. 
+The file `stereo_euroc.cc` executable is used to run stereo visual SLAM on the EuRoC dataset. These executables are compiled the during the ORB-SLAM3 build.
 
 The purpose of this executable is to:
 1. Load stereo image sequences and timestamps from EuRoC dataset folders.

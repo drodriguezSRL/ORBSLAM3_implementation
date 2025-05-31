@@ -15,9 +15,10 @@ Clone this repository
 git clone https://github.com/drodriguezSRL/ORBSLAM3-implementation
 ```
 
-Run the dataset setup script. This downloads, unzips, and fixes the EuRoC dataset and places it (say) in `~/Datasets/EuRoc/MH01`.
+Run the dataset setup script. This downloads, unzips, and fixes the EuRoC dataset and places it in `./data/EuRoc`.
 
 ```
+cd ORBSLAM3-implementation
 bash download_euroc_mh01.sh
 ```
 
@@ -30,7 +31,7 @@ docker-compose run orbslam3-spell
 
 ## Step2: Build ORB-SLAM3
 
-In its current version, the Docker container includes a cloned and fixed repository but unbuilt version of ORB-SLAM3. We need to build it inside the container. 
+In its current version, the Docker container includes a cloned and fixed workspace but unbuilt version of ORB-SLAM3. We need to manually build it inside the container. 
 
 Within the container, run the following command:
 
@@ -40,15 +41,15 @@ sh build.sh
 ```
 
 >[!IMPORTANT]
-> As indicated by Kevin Robb's implementation instructions, ORB-SLAM3 requires multiple builds before it can be succesfully built without any errors or warnings. In my experience, it often required between 3 to 5 builds (i.e, running the `sh build.sh` command) before it was successfully built. 
+> As indicated by [Kevin Robb's implementation instructions](https://github.com/kevin-robb/orb_slam_implementation), ORB-SLAM3 requires multiple build runs before it can be succesfully built without any errors or warnings. In my experience, it often required between 3 to 5 builds (i.e, running the `sh build.sh` command multiple times) before it was successfully built. 
 
 ## Step 3: Run examples
 
 Once ORB-SLAM3 is built, we can run a few simulation examples from the EuRoc dataset previously downloaded. 
 
-Within the container, choose one of the following to run. A map viewer as well as an image viewer should appear during the simulation. Once done, a `f_dataset-MH01_...txt` and a `kf_dataset-MH01_...txt` files are creating containing the camera complete estimated trajectory and keyframe trajectory, respectively. 
+Within the container, change to the `~/Dev/ORB_SLAM3/` directory, and choose one of the following to run. A map viewer as well as an image viewer should appear during the simulation. Once done, a `f_dataset-MH01_...txt` and a `kf_dataset-MH01_...txt` files are created within the `ORB_SLAM3` folder containing the camera complete estimated trajectory and keyframe trajectory, respectively. 
 
-For a detail description of this ORB-SLAM3 commands, check [orbslam3_explained](./orbslam3_explained.md). 
+For a detail description of these ORB-SLAM3 commands, check [orbslam3_explained](./orbslam3_explained.md). 
 
 ```
 # Mono
@@ -68,5 +69,9 @@ For a detail description of this ORB-SLAM3 commands, check [orbslam3_explained](
 
 ![Image](/docs/images/orbslam3_example_imageviewer.PNG)
 
+## Step 4: Adapt your own data 
 
+The most straigthforward solution for making your own data work with ORB-SLAM3 would be to mimick as much as possible the directory layout and data structure of one of the working examples provided by the original ORB-SLAM3 implementation. Then, you'd simply need to call the pre-existing executable of your choosing (mono, mono-interial, stereo, or stereo-inertial) in a similar fashion as did before. 
+
+In my case, I chose to use the EuRoC data structure as a reference. Since making a one-size-fits-all guide for data adaption would be almost impossible (as it would depend on the nature of your own data to begin with), you can check [here](/how_was_it_made.md#phase-5-adapting-my-own-data) all the steps I followed to run ORB-SLAM3 on the [SPICE-HL3 dataset](https://github.com/spaceuma/spice-hl3). 
 

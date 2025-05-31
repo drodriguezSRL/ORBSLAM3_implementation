@@ -15,7 +15,7 @@ Clone this repository
 git clone https://github.com/drodriguezSRL/ORBSLAM3-implementation
 ```
 
-Run the dataset setup script. This downloads, unzips, and fixes the EuRoC dataset and places it in `./data/EuRoc`.
+Run the dataset setup script. This downloads, unzips, and fixes the EuRoC dataset (some images may be corrupted and cause problems down the line) and places it in `./data/EuRoc`.
 
 ```
 cd ORBSLAM3-implementation

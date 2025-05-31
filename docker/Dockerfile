@@ -114,7 +114,7 @@ RUN sed -i '584s|Map\* pBiggerMap;|Map* pBiggerMap = nullptr;|' ./src/System.cc 
     #done' 
 
 
-# Set the default command to bash (good for dibuggin)
+# Set the default command to bash (good for dibugging)
 CMD ["bash"]
 
 # OPTION: use an entry point to run the example use case with EuRoc dataset MH01

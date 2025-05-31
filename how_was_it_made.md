@@ -1,10 +1,10 @@
 # How was ORBSLAM3_implementation done
 
-This describes how this ORBSLAM3 docker implementation was done. It includes all the steps, bugs, and workarounds that were needed to make it work.
+This doc describes how this ORBSLAM3 docker implementation was done. It includes all the steps, bugs, and workarounds that were needed to make it work.
 
 I originally used this file as a personal log book, documenting for my own sake every step I took (and planned on taking, thus the present tense used at times) during development. 
 
-It wasn't inteded to be publicly released but decided otherwise once the implementation was finally working. 
+It wasn't intended to be publicly released but decided otherwise once the implementation was finally working. 
 
 Take everything said in here with a great deal of skepticism as I'm far from being an expert programmer. I'm sure there are different, and definitely better, ways of going about some of the steps I took. But this is what worked for me, and it may work for you too. 
 
@@ -171,7 +171,7 @@ Based on Kevin Robb's implementation instructions, I need to:
 5. Handle possible build hiccups (retry if needed)
 
 >[!WARNING]
-> I haven't been able (yet) to build ORB-SLAM3 into the Docker image. I manage to get it to work by manually building ORB-SLAM3 within the container. 
+> I haven't been able (yet) to build ORB-SLAM3 into the Docker image. I managed to get it to work by manually building ORB-SLAM3 within the container. 
 
 #### Adding a non-root user
 

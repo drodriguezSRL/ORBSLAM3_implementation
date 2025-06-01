@@ -1,8 +1,10 @@
 # ORBSLAM3_implementation
 This contains a working Docker implementation of ORB-SLAM3. This implementation is heavily based on [Kevin Robb's](https://github.com/kevin-robb/orb_slam_implementation).
 
-Original ORB-SLAM3 repo: [https://github.com/UZ-SLAMLab/ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3) 
+Original ORB-SLAM3 repo: [https://github.com/UZ-SLAMLab/ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3)
+
 Original repo was last updated: Dec 2021
+
 Check [orbslam3_explained](/orbslam3_explained.md) for useful details on ORB-SLAM3. 
 
 For a exhaustive description of how this implementation was developed and a list of what still remains to be implemented, check [HOW](HOW.md).
@@ -12,13 +14,13 @@ For a exhaustive description of how this implementation was developed and a list
 Clone this repository
 
 ```
-git clone https://github.com/drodriguezSRL/ORBSLAM3-implementation
+git clone https://github.com/drodriguezSRL/ORBSLAM3_implementation
 ```
 
 Run the dataset setup script. This downloads, unzips, and fixes the EuRoC dataset (some images may be corrupted and cause problems down the line) and places it in `./data/EuRoc`.
 
 ```
-cd ORBSLAM3-implementation
+cd ORBSLAM3_implementation
 bash download_euroc_mh01.sh
 ```
 
@@ -74,7 +76,7 @@ python2.7 tools/evaluate_ate_scale.py ./output/MH01_GT.txt ./output/f_dataset-MH
 ``` 
 
 >[!NOTE]
->To use the `evaluate_ate_scale.py` script as is (i.e., as provided by ORB-SLAM3), you need python2.7 + numpy + matplotlib. As noted in Kevin's implementation, you'll need pip2.7 for this:
+>To use the `evaluate_ate_scale.py` script as is (i.e., as provided by ORB-SLAM3), you need python2.7 + numpy + matplotlib. You'll need pip2.7 for this:
 > ```
 > sudo apt install curl
 > cd ~/Desktop

@@ -613,7 +613,7 @@ docker cp <container_id>:/path/in/container/file.txt /host/destination/ #copy fi
 - [x] mount a volume to place output trajectories so they are accessible from host
 - [x] (optional) add a `docker-compose.yml` file to run it including local datasets, any custom config files...
 - [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose? --> written but haven't used it yet. not sure I need the permissions line.
-- [ ] (optional) define an `entrypoint.sh` how could I use it?
+- [ ] (optional) define an `entrypoint.sh`. File written but unused yet. 
 - [ ] (optional) how to include GPU support (CUDA)
 - [ ] try it out on windows terminal
 - [ ] adapt to other common datasets

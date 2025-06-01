@@ -5,7 +5,7 @@ Original ORB-SLAM3 repo: [https://github.com/UZ-SLAMLab/ORB_SLAM3](https://githu
 Original repo was last updated: Dec 2021
 Check [orbslam3_explained](/orbslam3_explained.md) for useful details on ORB-SLAM3. 
 
-For a exhaustive description of how this implementation was developed and a list of what still remains to be implemented, check [how_was_it_made](how_was_it_made.md).
+For a exhaustive description of how this implementation was developed and a list of what still remains to be implemented, check [HOW](HOW.md).
 
 ## Step 1: Setup
 
@@ -87,5 +87,5 @@ python2.7 tools/evaluate_ate_scale.py ./output/MH01_GT.txt ./output/f_dataset-MH
 
 The most straigthforward solution for making your own data work with ORB-SLAM3 would be to mimick as much as possible the directory layout and data structure of one of the working examples provided by the original ORB-SLAM3 implementation. Then, you'd simply need to call the pre-existing executable of your choosing (mono, mono-interial, stereo, or stereo-inertial) in a similar fashion as did before. 
 
-In my case, I chose to use the EuRoC data structure as a reference. Since making a one-size-fits-all guide for data adaption would be almost impossible (as it would depend on the nature of your own data to begin with), you can check [here](/how_was_it_made.md#phase-5-adapting-my-own-data) all the steps I followed to run ORB-SLAM3 on the [SPICE-HL3 dataset](https://github.com/spaceuma/spice-hl3). 
+In my case, I chose to use the EuRoC data structure as a reference. Since making a one-size-fits-all guide for data adaption would be almost impossible (as it would depend on the nature of your own data to begin with), you can check [here](/HOW.md#phase-5-adapting-my-own-data) all the steps I followed to run ORB-SLAM3 on the [SPICE-HL3 dataset](https://github.com/spaceuma/spice-hl3). 
 

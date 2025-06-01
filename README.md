@@ -67,6 +67,22 @@ For a detail description of these ORB-SLAM3 commands, check [orbslam3_explained]
 
 ![Image](/docs/images/orbslam_euroc_mono.gif)
 
+The outcome can then be evaluated using the `evaluate_ate_scale.py` script as follows:
+
+```
+python2.7 tools/evaluate_ate_scale.py ./output/MH01_GT.txt ./output/f_dataset-MH01_mono.txt --verbose
+``` 
+
+>[!NOTE]
+>To use the `evaluate_ate_scale.py` script as is (i.e., as provided by ORB-SLAM3), you need python2.7 + numpy + matplotlib. As noted in Kevin's implementation, you'll need pip2.7 for this:
+> ```
+> sudo apt install curl
+> cd ~/Desktop
+> curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+> sudo python2 get-pip.py
+> pip2.7 install numpy matplotlib
+> ```
+
 ## Step 4: Adapt your own data 
 
 The most straigthforward solution for making your own data work with ORB-SLAM3 would be to mimick as much as possible the directory layout and data structure of one of the working examples provided by the original ORB-SLAM3 implementation. Then, you'd simply need to call the pre-existing executable of your choosing (mono, mono-interial, stereo, or stereo-inertial) in a similar fashion as did before. 

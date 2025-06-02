@@ -540,6 +540,8 @@ I need to ensure data is synchronized properly, i.e., left and right images must
 >[!CAUTION]
 > There is a total of 646 missing or mismatched timestamps between `cam0`and `cam1`in the `spice-hl3` dataset. I need to ensure both camera data are synchronized by timestamp; one image per timestamp from each camera.
 
+To remove all unmatched timestamped frames from left and right I used the [missing_frames.py](/tools/missing_frames.py) script.
+
 >**RESULTS FOR 10ms DIFFERENCE**
 > Total missing or mismatched timestamps: 646
 > Total closest timestamps found: 33

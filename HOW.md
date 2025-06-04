@@ -517,7 +517,7 @@ For this, I created a script called [rename_data](/tools/rename_data.py) that re
 
 I wrote a second script called [generate_csv](/tools/generate_csv.py) to create the `data.csv` files for each camera by extracting timestamps and filenames from the newly renamed files.  
 
-I wrote the script `convert_imu_csv.py` to adapt the `data.csv` for the IMU as well. In this case, EuRoc creates a files CSV file with the followign columns `Timestamp (ns) | wx (rad/s) | wy (rad/s) | wz (rad/s) | ax (m/s^2) | ay (m/s^2) | ay (m/s^2) | az (m/s^2)`. See an example row below:
+I wrote the script `convert_imu_csv.py` to adapt the `data.csv` for the IMU as well. In this case, EuRoc creates a CSV file with the followign columns `Timestamp (ns) | wx (rad/s) | wy (rad/s) | wz (rad/s) | ax (m/s^2) | ay (m/s^2) | ay (m/s^2) | az (m/s^2)`. See an example row below:
 
 ```
 1403636579758555392,-0.099134701513277898,0.14730578886832138,0.02722713633111154,8.1476917083333333,-0.37592158333333331,-2.4026292499999999

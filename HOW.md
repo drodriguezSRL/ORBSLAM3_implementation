@@ -592,7 +592,7 @@ docker run -i container-name # (re)start a container
 docker container rm container-name #remove container; also works with docker rm
 docker container prune #delete all containers
 
-docker exec -it container-name /bun/bash #open a new terminal within a container (to open more than one terminal)
+docker exec -it container-name /bin/bash #open a new terminal within a container (to open more than one terminal)
 docker exec -it container-name ls #run other commands inside a container, in this case 'ls'
 
 # how to access and work on files outside the container

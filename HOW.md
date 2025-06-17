@@ -619,6 +619,7 @@ docker cp <container_id>:/path/in/container/file.txt /host/destination/ #copy fi
 - [ ] (optional) how to include GPU support (CUDA)
 - [ ] try it out on windows terminal
 - [ ] adapt to other common datasets
-- [ ] adapt to spice hl3
+- [x] adapt to spice hl3
 - [ ] create a auto-download script for spice-hl3
+- [x] adapt evaluation script to matlab
 - [ ] adapt evaluation script to py3

@@ -1,13 +1,11 @@
 # ORBSLAM3_implementation
-This contains a working Docker implementation of ORB-SLAM3. This implementation is heavily based on [Kevin Robb's](https://github.com/kevin-robb/orb_slam_implementation).
+This repository contains a working Docker implementation of ORB-SLAM3. This implementation is heavily based on [Kevin Robb's](https://github.com/kevin-robb/orb_slam_implementation).
 
-Original ORB-SLAM3 repo: [https://github.com/UZ-SLAMLab/ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3)
-
-Original repo was last updated: Dec 2021
+Original ORB-SLAM3 repo: [https://github.com/UZ-SLAMLab/ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3) (last updated: Dec 2021)
 
 Check [orbslam3_explained](/orbslam3_explained.md) for useful details on ORB-SLAM3. 
 
-For a exhaustive description of how this implementation was developed and a list of what still remains to be implemented, check [HOW](HOW.md).
+For a exhaustive step-by-step log of how I implemented ORB-SLAM3 and a list of what still remains to be implemented, check [HOW](HOW.md).
 
 ## Step 1: Setup
 

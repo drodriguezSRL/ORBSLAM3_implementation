@@ -1,6 +1,7 @@
 #! /bin/bash
 set -e # immediate exit on error
 
+
 # === Config ===
 VOCAB="./Vocabulary/ORBvoc.txt"
 DATASET="/data/EuRoc/MH01"

@@ -1,6 +1,6 @@
 # ORB-SLAM3 Explained
 
-This file is intended to explain what ORB-SLAM3 does in the background. 
+Here I tried to explain what ORB-SLAM3 does in the background in my own words (mostly for my own future reference). 
 
 ## Commands to run examples
 

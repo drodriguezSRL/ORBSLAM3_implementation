@@ -1,3 +1,4 @@
 # ignore all datasets
 data/
+output/
 *.pyc

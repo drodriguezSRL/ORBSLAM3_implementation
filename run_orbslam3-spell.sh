@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 echo "🔐 Allowing the root user (as used in the Docker container) to access the X display server (for GUI support)..."
 xhost +local:root

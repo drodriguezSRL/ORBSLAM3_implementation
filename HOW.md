@@ -1,12 +1,12 @@
 # How was ORBSLAM3_implementation done
 
-This doc describes how this ORBSLAM3 docker implementation was done. It includes all the steps, bugs, and workarounds that were needed to make it work.
+This doc describes how this ORBSLAM3 docker implementation was done. It includes all the steps, bugs, and workarounds that I needed to take to make it work.
 
-I originally used this file as a personal log book, documenting for my own sake every step I took (and planned on taking, thus the present tense used at times) during development. 
+I originally used this file as a personal log book, documenting for my own sake every step I took during development. 
 
 It wasn't intended to be publicly released but decided otherwise once the implementation was finally working. 
 
-Take everything said in here with a great deal of skepticism as I'm far from being an expert programmer. I'm sure there are different, and definitely better, ways of going about some of the steps I took. But this is what worked for me, and it may work for you too. 
+Take everything said in here with a great deal of skepticism as I'm no expert sw developer. I'm sure there are different, and definitely better, ways of going about some of the steps I took. But this is what worked for me, and it may work for you too. 
 
 - [Phase 1: Environment setup](#phase-1-environment-setup)
 - [Phase 2: Automating dataset download](#phase-2-automating-dataset-download)
@@ -24,11 +24,11 @@ Take everything said in here with a great deal of skepticism as I'm far from bei
 
 ### Install a fresh Ubuntu 20.04
 
-I'm going to run Ubuntu on [Windows Subsytem for Linux (WSL)](https://documentation.ubuntu.com/wsl/en/latest/) instead than on a virtual machine like VMware Workstation. 
+I ran Ubuntu on [Windows Subsytem for Linux (WSL)](https://documentation.ubuntu.com/wsl/en/latest/) instead than on a virtual machine like VMware Workstation. 
 
 WSL enables us to run a GNU/Linux environment on Windows. Once installed, Ubuntu can be used as a terminal interface on Windows and can launch any linux-native applications.
 
-If you don't have the latest WSL install you can run in the command line as administrator the following:
+If you don't have the latest WSL install you can run the following in the command line as administrator:
 
 ```
 wsl --install
@@ -100,7 +100,7 @@ The following is included in the [Dockerfile](docker/Dockerfile).
 - [x] Mount my datasets/configs via volumes
 - [ ] Optional: include ROS support 
 
-I created a [docker-compose](docker/docker-compose.yml) file. With this file I can avoid having to type long `docker run` commands like those needed to mount volumes (e.g., `docker run -i container-name -v ~/ORBSLAM3_implementation/src:/app`). This file describes the services, volumes, networks, environment variables, and how to build and run everything in my environment.
+I created a [docker-compose](docker/docker-compose.yml) file. With this file I avoided having to type long `docker run` commands like those needed to mount volumes (e.g., `docker run -i container-name -v ~/ORBSLAM3_implementation/src:/app`). This file describes the services, volumes, networks, environment variables, and how to build and run everything in my environment.
 
 In this YAML file I can define:
 - how to build the Dockerfile into an image
@@ -109,7 +109,7 @@ In this YAML file I can define:
 - what environment variables to use
 - more (networks, multiple services, ports...)
 
-With this `docker-compose.yml`file, instead of writing long `docker build` and `docker run` commands, I can just build the Docker image with:
+With this `docker-compose.yml` file, instead of writing long `docker build` and `docker run` commands, I can just build the Docker image with:
 
 ```
 cd docker
@@ -236,7 +236,7 @@ RUN apt-get udpate && \
 
 ## Phase 2: Automating dataset download
 
-I'm going to write a bash script to download the `EuRoC MH_01_easy`dataset, unzip it, and detect and fix all corrupted images.
+I wrote a bash script to download the `EuRoC MH_01_easy`dataset, unzip it, and detect and fix all corrupted images.
 
 - [x] Create the [download_euroc_mh01.sh](./download_euroc_mh01.sh) file
 
@@ -274,16 +274,16 @@ This section lists all the warning and errors I got in the process of developing
 - [E4] Checkiong current WSL limits. Extended WSL memory in `.wslconfig` to 8GB. Stil crushing. Could be due to building from VSCode? Trying to build container without running ORBSLAM3 `build.sh`. Success. Trying to run container in PowerShell and build ORBSLAM3 from whithin by running `sh build.sh` inside the `ORBSLAM-3`folder. Lots of errors and warnings. Run it 3 times. Built ORBSLAM3 succesfully after 3 attempts. No changes made. Name of the container `great_jackson`. 
 - [E5] Pangolin relies on X11, the Linux windowing system. Inside Docker, there's no GUI access by default, unless we give it permission. 
 
-First, we need to give permision to the `root` user to access X display by running `xhost +local:root` in the terminal where the Docker container will be run. We could also give permision to all local users with `xhost +local:` or even to all users with `xhost +`. Permissions can be revoked by the same commands simply swapping `+`for `-`. I'm going to create a basch script to simplify this workflow by running this command followed by running the container. 
+First, I needed to give permision to the `root` user to access X display by running `xhost +local:root` in the terminal where the Docker container will be run. I could also give permision to all local users with `xhost +local:` or even to all users with `xhost +`. Permissions can be revoked by the same commands simply swapping `+`for `-`. I could create a basch script to simplify this workflow by running this command followed by running the container. 
 
-We also need to expose the X domain socket. When running the container, we want to create a new volume that maps `/tmp/.X11-unix` to `:/tmp/.X11-unix:rw`. I included this within the `docker-compose.yml` volumes.
+I also needed to expose the X domain socket. When running the container, I want to create a new volume that maps `/tmp/.X11-unix` to `:/tmp/.X11-unix:rw`. I included this within the `docker-compose.yml` volumes.
 
-The third thing we need is giving it an X display by setting up the X environment variable. We can tell docker to use the same one the host is using `--env=DISPLAY`. I included this argument within my `docker-compose.yml` environment as `DISPLAY=${DISPLAY}`. 
+The third thing we need is giving it an X display by setting up the X environment variable. I can tell docker to use the same one the host is using `--env=DISPLAY`. I included this argument within my `docker-compose.yml` environment as `DISPLAY=${DISPLAY}`. 
 
 >[!TIP]
-> We can also run the container as a user that has permision to access X display, e.g., run the container as a user that matches the host. 
+> You can also run the container as a user that has permision to access X display, e.g., run the container as a user that matches the host. 
 
-**:fire Success :fire**: name of the current container `docker-orbslam3-spell-run-ee6c1ca75dba`.
+**:fire Success :fire**
 
 ## Phase 4: Output and results analysis
 
@@ -327,11 +327,11 @@ Independently from which of these two options I choose (A or B), ORB-SLAM3 provi
 
 ## Phase 5: Adapting my own data
 
-I'm going to try to adapt the [SPICE-HL3 dataset](https://github.com/spaceuma/spice-hl3) to work with ORB-SLAM3.
+I adapted the [SPICE-HL3 dataset](https://github.com/spaceuma/spice-hl3) to work with ORB-SLAM3.
 
-I'm going to first attempt to adapt and run ORB-SLAM3 over SPICE-HL3 **Trajectory F** stereo-inertial data. 
+I first attempted to adapt and run ORB-SLAM3 over SPICE-HL3 **Trajectory F** stereo-inertial data. 
 
-The best strategy would be to try to emulate the layout and setup of the working example whose sensor configuration matches that of the new dataset. In this case that would be the Stereo+IMU configuration. 
+The best strategy IMO was to try to emulate the layout and setup of the working example whose sensor configuration matches that of the new dataset. In this case that would be the Stereo+IMU configuration. 
 
 Make sure you understand the parsing of arguments when running the `stereo_inertial_euroc` example. More info [here](/orbslam3_explained.md). As a summary, we have:
 
@@ -343,15 +343,15 @@ Make sure you understand the parsing of arguments when running the `stereo_inert
 6. Output file name: `dataset-MH01_stereoi`
 
 >[!IMPORTANT]
-> The fastest strategy for making our own dataset work with ORB-SLAM3 is to rely on the already existing and compiled executables like `stereo_inertial_euroc`. It's recommended to use these same executable files when running ORB-SLAM3 since they are already compiled when ORB-SLAM3 is built. Therefore, we only need to adapt the directory structure to match the one expected by the executable to be used.  
+> The fastest strategy for making your own dataset work with ORB-SLAM3 is to rely on the already existing and compiled executables like `stereo_inertial_euroc`. It's recommended to use these same executable files when running ORB-SLAM3 since they are already compiled when ORB-SLAM3 is built. Therefore, you only need to adapt the directory structure to match the one expected by the executable to be used.  
 
 ### Adapting the directory layout
 
-I'm going to adapt the `spice-hl3` directory structure to work with the `./Examples/Stereo-Inertial/stereo_inertial_euroc` launch file. 
+I adapted the `spice-hl3` directory structure to work with the `./Examples/Stereo-Inertial/stereo_inertial_euroc` launch file. 
 
-First thing I will need to do is to create a new directory, which I will create in the ' /data' folder that is later on mount to `~/Datasets`, that micmicks what's inside the docker at `~/Dev/ORB_SLAM3/Examples/`. This new directory will be called `spice-hl3`. 
+First thing I did is to create a new directory, which I created in the ' /data' folder that is later on mounted to `~/Datasets`, which micmicks what's inside the docker at `~/Dev/ORB_SLAM3/Examples/`. This new directory is called `spice-hl3`. 
 
-In this directory I will have to include the following:
+In this directory I included the following:
 
 ```bash
 spice-hl3
@@ -410,7 +410,7 @@ With this directory layout and the data structure defined below, I could run any
 
 This section contains a few of the things that I had to do to make SPICE-HL3 work with ORB-SLAM3. This information is only included as a reference. The steps you need to take to adapt your own data are pretty much dependent on your data itself. 
 
-**The following may still be useful, however, when planning your next data acquisition if you already know that ORB-SLAM3 will need to be used.**
+**The following may still be useful when planning your next data acquisition if you already know that ORB-SLAM3 will need to be used.**
 
 **0. Understanding EuRoc data structure** 
 
@@ -538,7 +538,7 @@ I created the new `trajectory_F.txt` file from spice-hl3's `cam0/data.csv` file 
 I need to ensure data is synchronized properly, i.e., left and right images must be taken at the same time (or very close) and IMU data must be well-timed and match with image timestamps (interpolation may be needed otherwise).
 
 >[!CAUTION]
-> There is a total of 646 missing or mismatched timestamps between `cam0`and `cam1`in the `spice-hl3` dataset. I need to ensure both camera data are synchronized by timestamp; one image per timestamp from each camera.
+> There is a total of 646 missing or mismatched timestamps between `cam0`and `cam1`in the `spice-hl3` dataset (most likely associated to ROS2 timing issues). I need to ensure both camera data are synchronized by timestamp; one image per timestamp from each camera.
 
 To remove all unmatched timestamped frames from left and right I used the [missing_frames.py](/tools/missing_frames.py) script.
 
@@ -570,6 +570,8 @@ Run ORB-SLAM on a short part of my own dataset. Check:
 - tracking stability
 
 ## Docker commands
+
+Here's my own cheatsheet of docker commands:
 
 ```
 docker image sl  #list all images, also docker images
@@ -617,7 +619,7 @@ docker cp <container_id>:/path/in/container/file.txt /host/destination/ #copy fi
 - [x] (optional) a launch script `run_docker.sh` --> how would this work? how is it different from docker-compose? --> written but haven't used it yet. not sure I need the permissions line.
 - [ ] (optional) define an `entrypoint.sh`. File written but unused yet. 
 - [ ] (optional) how to include GPU support (CUDA)
-- [ ] try it out on windows terminal
+- [ ] try it out on Win terminal
 - [ ] adapt to other common datasets
 - [x] adapt to spice hl3
 - [ ] create a auto-download script for spice-hl3

@@ -115,10 +115,10 @@ RUN sed -i '584s|Map\* pBiggerMap;|Map* pBiggerMap = nullptr;|' ./src/System.cc 
 
 
 # Set the default command to bash (good for dibugging)
-CMD ["bash"]
+CMD ["bash"] 
 
 # OPTION: use an entry point to run the example use case with EuRoc dataset MH01
 # I can also use ENTRYPOINT ["/bin/bash","./entrypoint.sh"] for additional flexibility
 # COPY entrypoint.sh ./entrypoint.sh
 # RUN chmod +x ./entrypoint.sh
-# ENTRYPOINT [ "./entrypoint.sh" ]
+# ENTRYPOINT [ "./entrypoint.sh" ]  

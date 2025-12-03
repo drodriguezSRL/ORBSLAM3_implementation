@@ -14,4 +14,4 @@ services:
       - ../output:/root/output
     working_dir: /root
     stdin_open: true # docker run -i
-    tty: true # docker run -t 
+    tty: true # docker run -t  

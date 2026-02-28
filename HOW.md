@@ -8,13 +8,27 @@ It wasn't intended to be publicly released but decided otherwise once the implem
 
 Take everything said in here with a great deal of skepticism as I'm no expert sw developer. I'm sure there are different, and definitely better, ways of going about some of the steps I took. But this is what worked for me, and it may work for you too. 
 
-- [Phase 1: Environment setup](#phase-1-environment-setup)
-- [Phase 2: Automating dataset download](#phase-2-automating-dataset-download)
-- [Phase 3: Testing and debugging](#phase-3-testing-and-debugging)
-- [Phase 4: Output and results analysis](#phase-4-output-and-results-analysis)
-- [Phase 5: Adapting my own data](#phase-5-adapting-my-own-data)
-- [Docker commands](#docker-commands)
-- [Things to improve](#things-to-improve)
+- [How was ORBSLAM3\_implementation done](#how-was-orbslam3_implementation-done)
+  - [Phase 1: Environment setup](#phase-1-environment-setup)
+    - [Install a fresh Ubuntu 20.04](#install-a-fresh-ubuntu-2004)
+    - [Setup docker](#setup-docker)
+    - [Building the Dockerfile backbone](#building-the-dockerfile-backbone)
+      - [Install system dependencies](#install-system-dependencies)
+      - [Build Pangolin](#build-pangolin)
+      - [Install OpenCV](#install-opencv)
+      - [Install ORB-SLAM3](#install-orb-slam3)
+      - [Adding a non-root user](#adding-a-non-root-user)
+      - [Enabling sudo](#enabling-sudo)
+  - [Phase 2: Automating dataset download](#phase-2-automating-dataset-download)
+    - [Download Example Data: EuRoC MH\_01 easy](#download-example-data-euroc-mh_01-easy)
+  - [Phase 3: Testing and debugging](#phase-3-testing-and-debugging)
+  - [Phase 4: Output and results analysis](#phase-4-output-and-results-analysis)
+  - [Phase 5: Adapting my own data](#phase-5-adapting-my-own-data)
+    - [Adapting the directory layout](#adapting-the-directory-layout)
+    - [Adapting the data itself](#adapting-the-data-itself)
+    - [Testing new data](#testing-new-data)
+  - [Docker commands](#docker-commands)
+  - [Things to improve](#things-to-improve)
 
 
 >[!NOTE]
@@ -444,7 +458,7 @@ MH01
 - Each `data.csv` file contains a two column tabular structure of the form
     - for cameras: `timestamp, filename` (e.g.,`1403636763463555584,1403636763463555584.png`).
     - for imu: `timestamp, ax, ay, az, gx, gy, gz`
-- Each `sensor.yaml` file contains raw sensor calibration data (intrinsics, distorsions, extrinsicsm and sensor-specific parameters such as IMU noise and bias characteristics). For example:
+- Each `sensor.yaml` file contains raw sensor calibration data (intrinsics, distorsions, extrinsics, and sensor-specific parameters such as IMU noise and bias characteristics). For example:
 
 ```yaml
 ## cam config file
@@ -506,6 +520,8 @@ T_BS:
          0.0, 0.0, 1.0, 0.0,
          0.0, 0.0, 0.0, 1.0]
 ```
+>[!NOTE]
+> [Here](/config/) you will find a couple of examples of the config files I used to run the SPICE-HL3 dataset in monocular, stereo, and their inertial variants using the ZED2 camera data. **Note** that while I believe those were the last two config file versions I used to run it succesfully, some tweaking on your part may still be required.
 
 **1. File naming**
 
